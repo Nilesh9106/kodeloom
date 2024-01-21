@@ -1,6 +1,9 @@
 import Navbar from "../components/Navbar";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, redirect } from "react-router-dom";
 import Auth from "../pages/auth/page";
+import Profile from "../pages/profile/page";
+import LandingPage from "../pages/landing/page";
+import Home from "../pages/home/page";
 
 export const router = createBrowserRouter([
     {
@@ -9,12 +12,32 @@ export const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <h1>Home</h1>,
+                loader: () => {
+                    if (localStorage.getItem("token")) {
+                        return redirect("/dashboard")
+                    }
+                    return null
+                },
+                element: <LandingPage />,
+            },
+            {
+                path: "users/:username",
+                element: <Profile />,
             },
         ]
     },
     {
+        path: "/dashboard",
+        element: <Home />
+    },
+    {
         path: "/auth",
+        loader: () => {
+            if (localStorage.getItem("token")) {
+                return redirect("/dashboard")
+            }
+            return null
+        },
         element: <Auth />,
     }
 ])

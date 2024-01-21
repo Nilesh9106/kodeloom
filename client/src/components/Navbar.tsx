@@ -17,7 +17,7 @@ export default function Header() {
                     />
                     <NavbarBrand>
                         <Link to={'/'}>
-                            <p className="font-semibold text-2xl">CodeLoom</p>
+                            <p className="font-semibold text-2xl">KodeLoom</p>
                         </Link>
                     </NavbarBrand>
                 </NavbarContent>
@@ -77,7 +77,7 @@ export default function Header() {
                 </NavbarMenu>
             </Navbar>
             <Outlet />
-            <footer className="bg-white dark:bg-neutral-950 mt-5">
+            <footer className="bg-white dark:bg-neutral-950">
                 <div className="container flex flex-col items-center justify-between p-6 mx-auto space-y-4 sm:space-y-0 sm:flex-row">
                     <Link to="/">
                         KodeLoom
