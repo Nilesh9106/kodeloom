@@ -19,7 +19,7 @@ const login = async (request, response) => {
                 message: 'wrong password',
             });
         }
-        const token = await generateToken(user._id);
+        const token = generateToken(user._id);
         response.status(200).json({
             status: 'success',
             user,
@@ -45,7 +45,7 @@ const register = async (request, response) => {
         }
 
         const user = await User.create(request.body);
-        const token = await generateToken(user._id);
+        const token = generateToken(user._id);
         response.status(201).json({
             status: 'success',
             user,

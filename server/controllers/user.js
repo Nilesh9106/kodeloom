@@ -2,9 +2,9 @@ const dotenv = require('dotenv');
 const User = require('../models/user');
 dotenv.config();
 
-const getAllUser = async (req, res) => {
+const searchUser = async (req, res) => {
     try {
-        const users = await User.find().select('-password').populate('courses');
+        const users = await User.find({ username: { $regex: req.query.username } }).select('-password');
         return res.json({ users: users, status: "success" });
     } catch (error) {
         console.log(error);
@@ -14,7 +14,7 @@ const getAllUser = async (req, res) => {
 
 const getUserByUsername = async (req, res) => {
     try {
-        const user = await User.findOne({ username: req.params.username }).select('-password').populate("courses");
+        const user = await User.findOne({ username: req.params.username }).select('-password');
         return res.json({ user: user, status: "success" });
     } catch (error) {
         console.log(error);
@@ -25,7 +25,7 @@ const getUserByUsername = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         if (req.params.id !== req.user._id) return res.status(401).json({ message: "You can only update your account" });
-        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).select('-password').populate("courses");
+        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).select('-password');
         return res.json({ user: user, status: "success" });
     } catch (error) {
         console.log(error);
@@ -46,7 +46,7 @@ const deleteUser = async (req, res) => {
 
 
 module.exports = {
-    getAllUser,
+    searchUser,
     getUserByUsername,
     updateUser,
     deleteUser,
