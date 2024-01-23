@@ -6,6 +6,8 @@ import LandingPage from "../pages/landing/page";
 import Home from "../pages/dashboard/page";
 import useLoom from "./context";
 import { User } from "./interfaces";
+import CreateProject from "../pages/dashboard/project/Create";
+import ProjectPage from "../pages/dashboard/project/ProjectPage";
 
 export const router = createBrowserRouter([
     {
@@ -47,11 +49,11 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: "p/create",
-                element: <div>create project</div>
+                element: <CreateProject />
             },
             {
                 path: "p/:id",
-                element: <div>project</div>
+                element: <ProjectPage />
             },
         ]
     },

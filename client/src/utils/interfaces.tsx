@@ -1,12 +1,12 @@
 
 export interface User {
-    _id: number
+    _id: string
     username: string
     name: string
     email: string
 }
 export interface Project {
-    _id: number
+    _id?: string
     name: string
     description: string
     repo: string
@@ -15,7 +15,7 @@ export interface Project {
     managers: User[]
 }
 export interface Task {
-    _id: number
+    _id?: string
     name: string
     assignedTo: User
     project: Project

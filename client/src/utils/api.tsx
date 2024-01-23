@@ -23,7 +23,7 @@ export const postCall = async (endPoint: string, data: unknown) => {
         } else {
             toast.error("Something went wrong")
         }
-        return { status: "error" }
+        return null;
     }
 }
 
@@ -49,5 +49,6 @@ export const getCall = async (endPoint: string) => {
         } else {
             toast.error("Something went wrong")
         }
+        return null;
     }
 }

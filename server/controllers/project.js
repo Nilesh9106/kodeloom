@@ -22,7 +22,8 @@ const getProjectsByUserId = async (req, res) => {
 
 const createProject = async (req, res) => {
     try {
-        const project = await Project.create(req.body);
+        let project = (await Project.create(req.body));
+        project = await Project.findById(project._id).populate('members').populate('managers');
         return res.json({ project: project, status: "success" });
     } catch (error) {
         console.log(error);

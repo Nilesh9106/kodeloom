@@ -1,6 +1,6 @@
 import { Divider, Listbox, ListboxItem, ListboxSection } from "@nextui-org/react"
 import { MdAdd, MdClose } from "react-icons/md"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import useLoom from "../../../utils/context"
 import { useEffect, useState } from "react"
 import { getCall } from "../../../utils/api"
@@ -11,6 +11,7 @@ export default function Sidebar({ sideBar, setSideBar }: { sideBar: boolean, set
     const projects = useLoom((state) => state.projects)
     const user = useLoom((state) => state.user)
     const setProjects = useLoom((state) => state.setProjects)
+    const navigate = useNavigate()
 
     useEffect(() => {
         (async () => {
@@ -33,6 +34,18 @@ export default function Sidebar({ sideBar, setSideBar }: { sideBar: boolean, set
                 </button>
             </div>
             <Divider />
+
+            <Listbox>
+                <ListboxSection title="Actions">
+                    <ListboxItem
+                        key={"add project"}
+                        onClick={() => navigate("/dashboard/p/create")}
+                        endContent={<MdAdd className="text-xl" />}
+                    >
+                        New Project
+                    </ListboxItem>
+                </ListboxSection>
+            </Listbox>
             {loading ? <div className="flex justify-center items-center h-40">Loading...</div> :
                 <>{projects.length === 0 && <div className="flex justify-center items-center h-40">No projects found</div>}
                     {projects.length > 0 && <Listbox>
@@ -40,7 +53,7 @@ export default function Sidebar({ sideBar, setSideBar }: { sideBar: boolean, set
                             {projects.map((project) => (
                                 <ListboxItem
                                     key={project._id}
-                                    endContent={<MdAdd />}
+                                    onClick={() => navigate(`/dashboard/p/${project._id}`)}
                                 >
                                     {project.name}
                                 </ListboxItem>
@@ -48,16 +61,6 @@ export default function Sidebar({ sideBar, setSideBar }: { sideBar: boolean, set
                         </ListboxSection>
                     </Listbox>}
                 </>}
-            <Listbox>
-                <ListboxSection title="Actions">
-                    <ListboxItem
-                        key={"add project"}
-                        endContent={<MdAdd className="text-xl" />}
-                    >
-                        New Project
-                    </ListboxItem>
-                </ListboxSection>
-            </Listbox>
         </nav>
     )
 }

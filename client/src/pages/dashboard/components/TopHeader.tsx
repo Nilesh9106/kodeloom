@@ -8,8 +8,8 @@ export default function TopHeader({ sideBar, setSideBar }: { sideBar: boolean, s
     const user = useLoom(state => state.user)
     const navigate = useNavigate()
     return (
-        <header className="flex w-full items-center justify-between py-3 px-4 dark:bg-neutral-950/70 backdrop-blur-lg">
-            <Input placeholder="Search..." size="md" type="search" labelPlacement="outside" startContent={<MdSearch className="text-xl" />} className="sm:w-80 w-40" />
+        <header className="flex w-full items-center justify-between py-3 px-4 dark:bg-neutral-900/70 backdrop-blur-lg">
+            <Input placeholder="Search..." size="sm" type="search" variant="faded" labelPlacement="outside" startContent={<MdSearch className="text-xl" />} className="sm:w-80 w-40" />
             <div className="flex gap-2">
                 <Dropdown>
                     <DropdownTrigger>
