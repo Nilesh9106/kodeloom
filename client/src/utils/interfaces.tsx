@@ -13,6 +13,8 @@ export interface Project {
     labels: string[]
     members: User[]
     managers: User[]
+    createdAt: Date
+    updatedAt: Date
 }
 export interface Task {
     _id?: string
@@ -24,6 +26,8 @@ export interface Task {
     status: string
     priority: string
     dueDate: Date
+    createdAt: Date
+    updatedAt: Date
 }
 
 

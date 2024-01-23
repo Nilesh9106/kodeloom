@@ -52,7 +52,7 @@ export default function Sidebar({ sideBar, setSideBar }: { sideBar: boolean, set
                         <ListboxSection title="Projects">
                             {projects.map((project) => (
                                 <ListboxItem
-                                    key={project._id}
+                                    key={project._id ?? ""}
                                     onClick={() => navigate(`/dashboard/p/${project._id}`)}
                                 >
                                     {project.name}

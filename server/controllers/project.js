@@ -12,7 +12,7 @@ const getProjectById = async (req, res) => {
 
 const getProjectsByUserId = async (req, res) => {
     try {
-        const projects = await Project.find({ $or: [{ members: req.params.id }, { managers: req.params.id }] });
+        const projects = await Project.find({ $or: [{ members: req.params.id }, { managers: req.params.id }] }).populate('members').populate('managers');
         return res.json({ projects: projects, status: "success" });
     } catch (error) {
         console.log(error);
