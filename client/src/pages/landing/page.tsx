@@ -9,14 +9,14 @@ import { Link } from "react-router-dom";
 
 const Hero = () => {
     return <>
-        <section className="flex max-md:flex-col my-16  md:px-32 px-8">
-            <div className="flex md:flex-1 flex-col p-2 gap-4">
-                <h1 className="lg:text-6xl md:text-5xl sm:text-4xl text-3xl font-bold text-start  lg:leading-tight">Welcome to <span className="text-violet-400">Kodeloom</span>  Where Ideas Take Flight!</h1>
+        <section className="flex max-sm:flex-col my-16  xl:px-28 lg:px-20 md:px-10 px-5">
+            <div className="flex sm:flex-1 flex-col max-sm:items-center max-sm:text-center p-2 gap-4">
+                <h1 className="xl:text-6xl lg:text-5xl md:text-4xl sm:text-3xl text-2xl font-bold   lg:leading-tight">Welcome to <span className="text-violet-400">Kodeloom</span>  Where Ideas Take Flight!</h1>
                 <p className="text-xl dark:text-neutral-300 text-neutral-700">Unleash the Power of Seamless Collaboration and Effortless Project Management</p>
-                <Button as={Link} to={'/auth'} variant="shadow" size="lg" color="primary" className="max-w-fit my-1" >Get Started</Button>
+                <Button as={Link} to={'/auth'} variant="flat" size="lg" color="primary" className="max-w-fit my-1" >Get Started</Button>
             </div>
-            <div className="md:flex-1 ">
-                <Tilt tiltMaxAngleX={10} tiltMaxAngleY={10}>
+            <div className="sm:flex-1 max-sm:hidden ">
+                <Tilt tiltMaxAngleX={5} tiltMaxAngleY={5}>
                     <div className="px-10">
                         <img src="/hero.png" alt="Kodeloom" className="" />
                     </div>
@@ -60,7 +60,7 @@ const Features = () => {
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {features.map((val, ind) => {
                         return (
-                            <Tilt key={ind} scale={1.05} tiltMaxAngleX={10} tiltMaxAngleY={10}>
+                            <Tilt key={ind} scale={1.05} tiltMaxAngleX={5} tiltMaxAngleY={5}>
                                 <div onMouseMove={effect} onMouseLeave={(e) => {
                                     e.currentTarget.style.background = "rgb(10 10 10)";
                                 }} className="h-36 sm:h-56 flex flex-col justify-center border border-gray-200 rounded-xl text-center p-4 md:p-5 dark:border-neutral-700 dark:bg-neutral-950 backdrop-blur-md">
@@ -99,7 +99,7 @@ export default function LandingPage() {
                 <div className="container mx-auto text-center">
                     <h2 className="text-4xl leading-relaxed font-bold mb-4">Ready to Streamline Your Projects?</h2>
                     <p className="text-lg dark:text-neutral-400  mb-8">Join thousands of teams using our platform to achieve project management success.</p>
-                    <Button as={Link} to={'/auth'} variant="shadow" color="primary">
+                    <Button as={Link} to={'/auth'} variant="flat" color="primary">
                         Get Started Now
                     </Button>
                 </div>

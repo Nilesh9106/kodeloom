@@ -26,7 +26,11 @@ export default function TopHeader({ sideBar, setSideBar }: { sideBar: boolean, s
                             View Profile
                         </DropdownItem>
                         <DropdownItem key="settings">Settings</DropdownItem>
-                        <DropdownItem key="logout" className="text-danger" color="danger">
+                        <DropdownItem key="logout" onClick={() => {
+                            localStorage.removeItem("token")
+                            localStorage.removeItem("user")
+                            navigate("/")
+                        }} className="text-danger" color="danger">
                             Logout
                         </DropdownItem>
                     </DropdownMenu>

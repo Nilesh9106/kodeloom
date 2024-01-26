@@ -1,4 +1,9 @@
 
+type Label = {
+    name: string
+    color: string
+}
+
 export interface User {
     _id: string
     username: string
@@ -10,7 +15,7 @@ export interface Project {
     name: string
     description: string
     repo: string
-    labels: string[]
+    labels: Label[]
     members: User[]
     managers: User[]
     createdAt: Date
@@ -21,7 +26,7 @@ export interface Task {
     name: string
     assignedTo: User
     project: Project
-    labels: string[]
+    labels: Label[]
     description: string
     status: string
     priority: string

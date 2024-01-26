@@ -11,6 +11,8 @@ const Login = () => {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
     const handleSubmit = async () => {
+        console.log(username, password);
+
         setLoading(true)
         const data = await postCall("auth", { username, password });
         setLoading(false)
@@ -24,17 +26,26 @@ const Login = () => {
         }
     }
     return (
-        <Card>
-            <CardBody>
-                <Input isRequired value={username} onChange={(e) => setUsername(e.target.value)} type="text" label="Username" className="my-2" />
-                <Input isRequired value={password} onChange={(e) => setPassword(e.target.value)} type="password" label="Password" className="my-2" />
-            </CardBody>
-            <CardFooter>
-                <Button isLoading={loading} isDisabled={loading} onClick={handleSubmit} fullWidth color="primary" >
-                    Login
-                </Button>
-            </CardFooter>
-        </Card>
+        <>
+            <form onSubmit={(e) => {
+                e.preventDefault()
+                setTimeout(() => {
+                    handleSubmit()
+                }, 500);
+            }}>
+                <Card>
+                    <CardBody>
+                        <Input isRequired value={username} onChange={(e) => setUsername(e.target.value)} type="text" label="Username" className="my-2" />
+                        <Input isRequired value={password} onChange={(e) => setPassword(e.target.value)} type="password" label="Password" className="my-2" />
+                    </CardBody>
+                    <CardFooter>
+                        <Button isLoading={loading} isDisabled={loading} type="submit" fullWidth color="primary" >
+                            Login
+                        </Button>
+                    </CardFooter>
+                </Card>
+            </form>
+        </>
     )
 }
 
@@ -60,26 +71,33 @@ const SignUp = () => {
         }
     }
     return (
-        <Card>
-            <CardBody>
-                <Input type="text" value={username} onChange={(e) => setUsername(e.target.value)} isRequired label="Username" className="my-2" />
-                <Input type="text" value={name} onChange={(e) => setName(e.target.value)} isRequired label="Name" className="my-2" />
-                <Input isRequired value={email} onChange={(e) => setEmail(e.target.value)} type="email" label="Email" className="my-2" />
-                <Input isRequired value={password} onChange={(e) => setPassword(e.target.value)} type="password" label="Password" className="my-2" />
-            </CardBody>
-            <CardFooter>
-                <Button isLoading={loading} isDisabled={loading} onClick={handleSubmit} fullWidth color="primary" >
-                    Sign up
-                </Button>
-            </CardFooter>
-        </Card>
+        <form onSubmit={(e) => {
+            e.preventDefault()
+            setTimeout(() => {
+                handleSubmit()
+            }, 500);
+        }}>
+            <Card>
+                <CardBody>
+                    <Input type="text" value={username} onChange={(e) => setUsername(e.target.value)} isRequired label="Username" className="my-2" />
+                    <Input type="text" value={name} onChange={(e) => setName(e.target.value)} isRequired label="Name" className="my-2" />
+                    <Input isRequired value={email} onChange={(e) => setEmail(e.target.value)} type="email" label="Email" className="my-2" />
+                    <Input isRequired value={password} onChange={(e) => setPassword(e.target.value)} type="password" label="Password" className="my-2" />
+                </CardBody>
+                <CardFooter>
+                    <Button isLoading={loading} isDisabled={loading} type="submit" fullWidth color="primary" >
+                        Sign up
+                    </Button>
+                </CardFooter>
+            </Card>
+        </form>
     )
 }
 
 
 export default function Auth() {
     return (
-        <div className="flex max-w-xl mx-auto my-20 flex-col">
+        <div className="flex max-w-xl mx-auto my-20 flex-col max-sm:px-2">
             <Tabs fullWidth className="w-full" aria-label="Options">
                 <Tab key="Login" title="Login">
                     <Login />

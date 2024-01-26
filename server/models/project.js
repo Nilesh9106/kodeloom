@@ -13,8 +13,18 @@ const projectSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    // add list of object which contain label name and random  color
     labels: [{
-        type: String
+        name: {
+            type: String,
+            required: true,
+            unique: true
+        },
+        color: {
+            type: String,
+            default: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+            required: true
+        }
     }],
     members: [{
         type: mongoose.Schema.Types.ObjectId,

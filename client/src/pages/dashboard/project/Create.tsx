@@ -5,6 +5,11 @@ import useLoom from "../../../utils/context"
 import { postCall } from "../../../utils/api";
 import { useNavigate } from "react-router-dom";
 
+type Label = {
+    name: string
+    color: string
+}
+
 export default function CreateProject() {
     const user = useLoom((state) => state.user);
     const setProjects = useLoom((state) => state.setProjects);
@@ -16,7 +21,7 @@ export default function CreateProject() {
         name: "",
         description: "",
         repo: "",
-        labels: [] as string[],
+        labels: [] as Label[],
         managers: [user?._id] as string[],
         members: [],
     })
@@ -57,10 +62,12 @@ export default function CreateProject() {
                 <div className="my-1 flex flex-col gap-2">
                     {project.labels.length > 0 && <div className="flex flex-wrap gap-1 ">
                         {project.labels.map((label, index) => (
-                            <Chip key={index} onClose={() => {
+                            <Chip key={index} style={{
+                                color: label.color
+                            }} onClose={() => {
                                 setProject({ ...project, labels: project.labels.filter((_, i) => i !== index) })
                             }} variant="flat">
-                                {label}
+                                {label.name}
                             </Chip>
                         ))}
                     </div>}
@@ -68,14 +75,14 @@ export default function CreateProject() {
                         if (e.key == 'Enter' || e.keyCode == 188) {
                             e.preventDefault();
                             if (label.trim() == "") return;
-                            setProject({ ...project, labels: [...project.labels, label.trim()] })
+                            setProject({ ...project, labels: [...project.labels, { name: label.trim(), color: "#" + Math.floor(Math.random() * 16777215).toString(16) }] })
                             setLabel("")
                         }
                     }} onChange={(e) => {
                         if (e.currentTarget.value.charAt(e.currentTarget.value.length - 1) == ',') {
                             e.preventDefault();
                             if (label.trim() == "") return;
-                            setProject({ ...project, labels: [...project.labels, label.trim()] })
+                            setProject({ ...project, labels: [...project.labels, { name: label.trim(), color: "#" + Math.floor(Math.random() * 16777215).toString(16) }] })
                             setLabel("")
                         }
                         setLabel(e.currentTarget.value);
