@@ -17,6 +17,7 @@ export interface Project {
     repo: string
     labels: Label[]
     members: User[]
+    createdBy: User
     managers: User[]
     createdAt: Date
     updatedAt: Date

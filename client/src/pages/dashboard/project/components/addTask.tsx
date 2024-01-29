@@ -63,6 +63,7 @@ export default function AddTask({ project, onAdd, type }: { project: Project, ty
                                             isRequired
                                             allowsCustomValue={false}
                                             onSelectionChange={(key) => {
+
                                                 if (!key) return;
                                                 setTask({ ...task, assignedTo: key.toString() })
                                             }}

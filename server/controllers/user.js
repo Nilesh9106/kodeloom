@@ -4,6 +4,10 @@ dotenv.config();
 
 const searchUser = async (req, res) => {
     try {
+        if (!req.query.username) {
+            const users = await User.find().select('-password');
+            return res.json({ users: users, status: "success" });
+        }
         const users = await User.find({ username: { $regex: req.query.username } }).select('-password');
         return res.json({ users: users, status: "success" });
     } catch (error) {

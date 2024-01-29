@@ -8,6 +8,7 @@ import useLoom from "./context";
 import { User } from "./interfaces";
 import CreateProject from "../pages/dashboard/project/Create";
 import ProjectPage from "../pages/dashboard/project/ProjectPage";
+import ProjectInfo from "../pages/dashboard/project/projectInfo";
 
 export const router = createBrowserRouter([
     {
@@ -48,8 +49,22 @@ export const router = createBrowserRouter([
         element: <Home />,
         children: [
             {
+                index: true,
+                loader: () => {
+                    if (useLoom.getState().projects.length > 0) {
+                        return redirect(`/dashboard/p/${useLoom.getState().projects[0]._id}`)
+                    } else {
+                        return redirect("/dashboard/p/create")
+                    }
+                }
+            },
+            {
                 path: "p/create",
                 element: <CreateProject />
+            },
+            {
+                path: "p/:id/info",
+                element: <ProjectInfo />
             },
             {
                 path: "p/:id",

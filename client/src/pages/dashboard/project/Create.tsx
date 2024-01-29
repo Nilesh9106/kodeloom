@@ -24,6 +24,7 @@ export default function CreateProject() {
         labels: [] as Label[],
         managers: [user?._id] as string[],
         members: [],
+        createdBy: user?._id
     })
 
     const handleSubmit = async () => {
@@ -88,7 +89,7 @@ export default function CreateProject() {
                         setLabel(e.currentTarget.value);
                     }} value={label} label="Labels" variant="faded" type="text" radius="sm" placeholder="Labels for tasks" labelPlacement="outside" className="md:flex-1" />
                 </div>
-                <Button color="secondary" className="my-2" variant="shadow" onClick={handleSubmit} isLoading={loading}>
+                <Button color="secondary" className="my-2" variant="solid" onClick={handleSubmit} isLoading={loading}>
                     {loading ? "Creating Project" : "Create Project"}
                 </Button>
             </div>
