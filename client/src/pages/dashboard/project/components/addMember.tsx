@@ -18,6 +18,7 @@ import { MemberFormType, Project } from "../../../../types/project";
 import { User } from "../../../../types/auth";
 import { ProjectService } from "../../../../helpers/ProjectService";
 import { UserService } from "../../../../helpers/UserService";
+import { toast } from "sonner";
 
 export default function AddMember({ project }: { project: Project }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -43,6 +44,7 @@ export default function AddMember({ project }: { project: Project }) {
           return p;
         })
       );
+      toast.success("Invite Sent Successfully");
     }
     setLoading(false);
   };

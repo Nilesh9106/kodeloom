@@ -1,219 +1,13 @@
-import {
-  Avatar,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Chip,
-  Divider,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Radio,
-  RadioGroup,
-  Tooltip,
-  User,
-  useDisclosure,
-} from "@nextui-org/react";
-import { useState } from "react";
-import useLoom from "../../../../utils/context";
-import ReactTimeAgo from "react-time-ago";
+import { Card, CardBody, CardHeader, useDisclosure } from "@nextui-org/react";
+import { useEffect, useState } from "react";
+
 import AddTask from "./addTask";
 import { Task, TaskStatusType } from "../../../../types/task";
 import { Project } from "../../../../types/project";
 
-const TaskModal = ({
-  isOpen,
-  onOpenChange,
-  task,
-  onStatusChange,
-  project,
-}: {
-  isOpen: boolean;
-  project: Project;
-  onOpenChange: () => void;
-  task: Task;
-  onStatusChange: (val: TaskStatusType) => Promise<void>;
-}) => {
-  const [loading, setLoading] = useState(false);
-  const user = useLoom((state) => state.user);
-
-  return (
-    <Modal
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      size="3xl"
-      backdrop="blur"
-    >
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex items-center gap-5 capitalize font-bold text-2xl ">
-              <span className="leading-tight">{task.name}</span>
-              <Chip
-                key={task.priority}
-                className="mt-1.5"
-                size="sm"
-                variant="flat"
-                color={
-                  task.priority == "Low"
-                    ? "success"
-                    : task.priority == "Medium"
-                    ? "warning"
-                    : "danger"
-                }
-              >
-                {task.priority}
-              </Chip>
-            </ModalHeader>
-            <ModalBody className="flex flex-col ">
-              <p>{task.description}</p>
-              <Card>
-                <CardHeader>
-                  {(task.assignedTo._id == user?._id ||
-                    project.managers.find(
-                      (user) => user._id == task.assignedTo._id
-                    )) && (
-                    <RadioGroup
-                      label="status"
-                      isDisabled={loading}
-                      value={task.status}
-                      onValueChange={async (val) => {
-                        setLoading(true);
-                        await onStatusChange(val as TaskStatusType);
-                        setLoading(false);
-                      }}
-                    >
-                      <div className="flex gap-3">
-                        <Radio value="TODO" color="warning">
-                          TODO
-                        </Radio>
-                        <Radio value="In Progress" color="secondary">
-                          In Progress
-                        </Radio>
-                        <Radio value="Completed" color="success">
-                          Completed
-                        </Radio>
-                      </div>
-                    </RadioGroup>
-                  )}
-                </CardHeader>
-                <CardBody className="flex flex-col gap-2">
-                  <span className="font-semibold text-neutral-500">
-                    Assignee:{" "}
-                  </span>
-                  <User
-                    className="justify-start my-2"
-                    name={task.assignedTo.name}
-                    description={task.assignedTo.email}
-                    avatarProps={{
-                      src: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
-                      size: "sm",
-                    }}
-                  />
-                  <span className="font-semibold ">
-                    Due Date: <ReactTimeAgo date={task.dueDate} />
-                  </span>
-
-                  <Divider className="my-1" />
-                  <div className="flex gap-1">
-                    {task.labels.map((label) => (
-                      <Chip
-                        key={label.name}
-                        size="sm"
-                        variant="flat"
-                        style={{
-                          backgroundColor: label.color + "30",
-                          color: label.color,
-                        }}
-                        className="backdrop-blur"
-                      >
-                        {label.name}
-                      </Chip>
-                    ))}
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <p className="text-sm">
-                      Created <ReactTimeAgo date={task.createdAt} />{" "}
-                    </p>
-                    <p className="text-sm">
-                      Updated <ReactTimeAgo date={task.updatedAt} />
-                    </p>
-                  </div>
-                </CardBody>
-              </Card>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                color="danger"
-                isLoading={loading}
-                variant="flat"
-                onPress={onClose}
-              >
-                Close
-              </Button>
-            </ModalFooter>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
-  );
-};
-
-const TaskCard = (task: Task) => {
-  return (
-    <>
-      <CardHeader className="flex justify-between font-semibold capitalize pb-0 items-center">
-        <span>{task.name}</span>
-      </CardHeader>
-      <CardBody className="flex flex-col gap-2">
-        <p className="dark:text-neutral-400 text-neutral-700">
-          {task.description}
-        </p>
-        <Divider className="my-1" />
-        <div className="flex items-center">
-          <Tooltip content={task.assignedTo.username}>
-            <Avatar src={task.assignedTo.avatar} size="sm" />
-          </Tooltip>
-          <div className="flex flex-wrap flex-1 justify-end gap-2">
-            <Tooltip content="Priority">
-              <Chip
-                key={task.priority}
-                size="sm"
-                variant="flat"
-                color={
-                  task.priority == "Low"
-                    ? "success"
-                    : task.priority == "Medium"
-                    ? "warning"
-                    : "danger"
-                }
-              >
-                {task.priority}
-              </Chip>
-            </Tooltip>
-            {task.labels.map((label) => (
-              <Chip
-                key={label.name}
-                size="sm"
-                variant="flat"
-                style={{
-                  backgroundColor: label.color + "30",
-                  color: label.color,
-                }}
-                className="backdrop-blur"
-              >
-                {label.name}
-              </Chip>
-            ))}
-          </div>
-        </div>
-      </CardBody>
-    </>
-  );
-};
+import TaskCard from "./TaskCard";
+import TaskModal from "./TaskModal";
+import { useDrop } from "react-dnd";
 
 export const TaskCategoryCard = ({
   type,
@@ -222,20 +16,58 @@ export const TaskCategoryCard = ({
   project,
   fetchTasks,
   onStatusChange,
+  onTasksChange,
+  filter,
 }: {
   type: TaskStatusType;
   tasks: Task[];
+  filter: "all" | "pending" | "overdue";
   isAdmin: boolean;
   project: Project;
   fetchTasks: () => void;
+  onTasksChange: (tasks: Task[]) => void;
   onStatusChange: (val: TaskStatusType, id: string) => Promise<void>;
 }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectedTask, setSelectedTask] = useState(0);
+  const [filteredTasks, setFilteredTasks] = useState([] as Task[]);
+  const [{ isOver }, dropRef] = useDrop({
+    accept: "TASK",
+    drop: (item: { task: Task }) => {
+      onStatusChange(type, item.task._id!);
+    },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  });
+  useEffect(() => {
+    if (filter == "overdue") {
+      setFilteredTasks(
+        tasks.filter(
+          (task) => task.dueDate && new Date(task.dueDate) < new Date()
+        )
+      );
+    } else if (filter == "pending") {
+      setFilteredTasks(
+        tasks.filter(
+          (task) => task.dueDate && new Date(task.dueDate) > new Date()
+        )
+      );
+    } else {
+      setFilteredTasks(tasks);
+    }
+  }, [filter, tasks]);
 
   return (
     <>
-      <Card className="sm:flex-1 max-sm:w-full">
+      <Card
+        ref={dropRef}
+        className={`sm:flex-1 max-sm:w-full ${
+          isOver
+            ? "border-2 border-blue-600"
+            : "border-2 dark:border-neutral-900 border-neutral-200"
+        }`}
+      >
         <CardHeader className="flex justify-between items-center">
           <div>{type} Tasks</div>
           {isAdmin && (
@@ -244,34 +76,37 @@ export const TaskCategoryCard = ({
         </CardHeader>
         <CardBody>
           <div className="flex flex-col gap-2">
-            {tasks
+            {filteredTasks
               .filter((task) => task.status === type)
               .map((task) => (
-                <Card
+                <TaskCard
                   key={task._id}
-                  radius="sm"
-                  isPressable
-                  onPress={() => {
-                    setSelectedTask(tasks.findIndex((t) => t._id === task._id));
-                    onOpen();
-                  }}
-                >
-                  {TaskCard(task)}
-                </Card>
+                  tasks={tasks}
+                  task={task}
+                  onOpen={onOpen}
+                  setSelectedTask={setSelectedTask}
+                />
               ))}
-            {tasks.filter((task) => task.status === type).length === 0 && (
-              <div>No tasks</div>
-            )}
+            {filteredTasks.filter((task) => task.status === type).length ===
+              0 && <div>No tasks</div>}
           </div>
         </CardBody>
       </Card>
       <TaskModal
         isOpen={isOpen}
+        onTaskChange={async (task) => {
+          const newTasks = [...tasks];
+          newTasks[selectedTask] = task;
+          onTasksChange(newTasks);
+        }}
         project={project}
         onOpenChange={onOpenChange}
-        task={tasks[selectedTask]}
+        task={filteredTasks[selectedTask]}
         onStatusChange={async (val: string) => {
-          await onStatusChange(val as TaskStatusType, tasks[selectedTask]._id!);
+          await onStatusChange(
+            val as TaskStatusType,
+            filteredTasks[selectedTask]._id!
+          );
         }}
       />
     </>

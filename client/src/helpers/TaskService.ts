@@ -18,6 +18,14 @@ export class TaskService {
       };
     }
   );
+  static assignTask = errorHandler(async (id: string, userId: string) => {
+    const { data } = await api.put(apiRoutes.task.update(id), {
+      assignedTo: userId,
+    });
+    return data as {
+      task: Task;
+    };
+  });
   static deleteTask = errorHandler(async (id: string) => {
     const { data } = await api.delete(apiRoutes.task.delete(id));
     return data as {

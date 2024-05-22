@@ -8,7 +8,7 @@ import { MdAdd, MdClose } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import useLoom from "../../../utils/context";
 import { useCallback, useEffect, useState } from "react";
-import { ProjectService } from "../../../helpers/ProjectService";
+import { BsPeople } from "react-icons/bs";
 
 type Props = {
   sideBar: boolean;
@@ -18,21 +18,14 @@ type Props = {
 export default function Sidebar({ sideBar, setSideBar }: Props) {
   const [loading, setLoading] = useState(false);
   const projects = useLoom((state) => state.projects);
-  const user = useLoom((state) => state.user);
-  const setProjects = useLoom((state) => state.setProjects);
+  const fetchProjects = useLoom((state) => state.fetchProjects);
   const navigate = useNavigate();
 
   const fetchData = useCallback(async () => {
-    if (!user?._id) {
-      return;
-    }
     setLoading(true);
-    const res = await ProjectService.getProjectsByUserId(user._id);
-    if (res) {
-      setProjects(res.projects);
-    }
+    await fetchProjects();
     setLoading(false);
-  }, [setProjects, user?._id]);
+  }, [fetchProjects]);
 
   useEffect(() => {
     fetchData();
@@ -59,6 +52,13 @@ export default function Sidebar({ sideBar, setSideBar }: Props) {
 
       <Listbox>
         <ListboxSection title="Actions">
+          <ListboxItem
+            key={"invites"}
+            onClick={() => navigate("/dashboard/invites")}
+            endContent={<BsPeople className="text-xl" />}
+          >
+            Invites
+          </ListboxItem>
           <ListboxItem
             key={"add project"}
             onClick={() => navigate("/dashboard/p/create")}

@@ -10,6 +10,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -26,14 +27,17 @@ import AddMember from "./components/addMember";
 import { Project } from "../../../types/project";
 import { toast } from "sonner";
 import { ProjectService } from "../../../helpers/ProjectService";
+import { MdOutlineRefresh } from "react-icons/md";
 
 export default function ProjectInfo() {
   const projects = useLoom((state) => state.projects);
   const setProjects = useLoom((state) => state.setProjects);
   const user = useLoom((state) => state.user);
+  const fetchProjects = useLoom((state) => state.fetchProjects);
   const [project, setProject] = useState<Project>();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const [loading, setLoading] = useState(false);
 
   const handleDelete = async (userId: string, role: "member" | "manager") => {
     if (!id) {
@@ -48,6 +52,13 @@ export default function ProjectInfo() {
       role,
     });
     if (res) {
+      if (user?._id == userId) {
+        setProjects(projects.filter((p) => p._id !== id));
+        navigate("/dashboard");
+        toast.dismiss(token);
+        toast.success("Member Deleted Successfully");
+        return;
+      }
       setProject(res.project);
       setProjects(
         projects.map((p) => {
@@ -105,9 +116,15 @@ export default function ProjectInfo() {
   useEffect(() => {
     if (projects.length > 0) {
       const p = projects.find((project) => project._id === id);
+      if (!p) {
+        navigate("/dashboard");
+        return;
+      }
       setProject(p);
+    } else {
+      navigate("/dashboard");
     }
-  }, [projects, id]);
+  }, [projects, id, navigate]);
 
   return (
     <>
@@ -127,7 +144,10 @@ export default function ProjectInfo() {
                 {project?.description}
               </div>
               <div className="text-sm leading-tight text-default-400 my-2">
-                Create <ReactTimeAgo date={project.createdAt} />
+                <span>
+                  Created <ReactTimeAgo date={project.createdAt} /> • Updated{" "}
+                  <ReactTimeAgo date={project.updatedAt} />{" "}
+                </span>
               </div>
             </div>
             <div>
@@ -148,9 +168,22 @@ export default function ProjectInfo() {
             topContent={
               <div className="flex justify-between items-center">
                 <div className="text-lg font-semibold">Members</div>
-                {project.managers.find((u) => u._id == user?._id) && (
-                  <AddMember project={project} />
-                )}
+                <div className="flex gap-3">
+                  <Button
+                    onClick={async () => {
+                      setLoading(true);
+                      await fetchProjects();
+                      setLoading(false);
+                    }}
+                    isIconOnly
+                    variant="light"
+                  >
+                    <MdOutlineRefresh className="text-xl" />
+                  </Button>
+                  {project.managers.find((u) => u._id == user?._id) && (
+                    <AddMember project={project} />
+                  )}
+                </div>
               </div>
             }
           >
@@ -162,6 +195,8 @@ export default function ProjectInfo() {
             <TableBody
               emptyContent="No Users to show"
               items={[...project.managers, ...project.members]}
+              loadingContent={<Spinner />}
+              loadingState={loading ? "loading" : "idle"}
             >
               {(item) => {
                 const isAdmin = project.managers.find(
@@ -243,7 +278,7 @@ export default function ProjectInfo() {
                             <BiDotsVertical className="text-xl text-default-500" />
                           </Button>
                         </DropdownTrigger>
-                        <DropdownMenu items={dropdownItems}>
+                        <DropdownMenu variant="flat" items={dropdownItems}>
                           {(item) => (
                             <DropdownItem
                               key={item.key}

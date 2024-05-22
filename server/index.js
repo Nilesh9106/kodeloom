@@ -5,6 +5,7 @@ const authRouter = require('./routes/auth')
 const userRouter = require('./routes/user')
 const taskRouter = require('./routes/task')
 const projectRouter = require('./routes/project')
+const inviteRouter = require('./routes/invite')
 
 require('dotenv').config()
 const app = express()
@@ -19,6 +20,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
 app.use('/api/tasks', taskRouter);
 app.use('/api/projects', projectRouter);
+app.use('/api/invites', inviteRouter);
 
 mongoose.connect(process.env.MONGO_URI).then(() => console.log('MongoDB connected')).catch((error) => console.log(error))
 

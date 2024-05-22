@@ -31,4 +31,10 @@ export const apiRoutes = {
     update: (id: string) => `tasks/${id}`,
     delete: (id: string) => `tasks/${id}`,
   },
+  invite: {
+    getByUserId: (id: string) => `invites/GetByUserId/${id}`,
+    getByProjectId: (id: string) => `invites/GetByProjectId/${id}`,
+    accept: (id: string) => `invites/${id}/accept`,
+    reject: (id: string) => `invites/${id}/reject`,
+  },
 };

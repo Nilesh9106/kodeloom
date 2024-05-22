@@ -1,5 +1,6 @@
 const Project = require('../models/project');
 const Task = require('../models/task');
+const Invite = require('../models/invite');
 const httpCode = require('../constants/httpCode');
 
 const getProjectById = async (req, res) => {
@@ -55,7 +56,7 @@ const deleteProject = async (req, res) => {
         if (!project) return res.status(httpCode.NotFound).json({ message: "Project not found" });
         if (project.createdBy.toString() != req.user._id.toString()) return res.status(httpCode.Unauthorized).json({ message: "Only Creator of Project can delete Project" });
         await Task.deleteMany({ project: project._id });
-        await project.remove();
+        await project.deleteOne();
         return res.json({ message: "Project deleted successfully"});
     }
     catch (error) {
@@ -74,11 +75,12 @@ const addMember = async (req, res) => {
             project = await Project.findById(req.params.id).populate("members managers createdBy");
             return res.json({ project: project })
         }
-        if (req.body.role == "member") {
-            project = await Project.findByIdAndUpdate(req.params.id,{$addToSet: {members:req.body.userId}},{new:true}).populate("members managers createdBy");
-        } else {
-            project = await Project.findByIdAndUpdate(req.params.id,{$addToSet: {managers:req.body.userId}},{new:true}).populate("members managers createdBy");
-        }
+        await Invite.create({
+            project: req.params.id,
+            user: req.body.userId,
+            role: req.body.role
+        })
+        project = await project.populate("members managers createdBy");
         return res.json({ project: project });
     }
     catch (error) {

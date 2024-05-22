@@ -1,7 +1,13 @@
-import { BreadcrumbItem, Breadcrumbs, Button } from "@nextui-org/react";
+import {
+  BreadcrumbItem,
+  Breadcrumbs,
+  Button,
+  Select,
+  SelectItem,
+} from "@nextui-org/react";
 import useLoom from "../../../utils/context";
 import { useCallback, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { MdGroup } from "react-icons/md";
 import Loading from "../../../components/Loading";
 import { TaskCategoryCard } from "./components/TaskCategory";
@@ -15,6 +21,10 @@ export default function ProjectPage() {
   const [loading, setLoading] = useState(false);
   const [tasks, setTasks] = useState([] as Task[]);
   const { id: projectId } = useParams<{ id: string }>();
+  const [filter, setFilter] = useState<"all" | "pending" | "overdue">(
+    "pending"
+  );
+  const navigate = useNavigate();
 
   const fetchTasks = useCallback(async () => {
     setLoading(true);
@@ -42,11 +52,15 @@ export default function ProjectPage() {
     (async () => {
       if (projects.length > 0) {
         const p = projects.find((project) => project._id === projectId);
+        if (!p) {
+          navigate("/dashboard/p/create/");
+          return;
+        }
         setProject(p);
         await fetchTasks();
       }
     })();
-  }, [projects, projectId, fetchTasks]);
+  }, [projects, projectId, fetchTasks, navigate]);
 
   return (
     <>
@@ -58,6 +72,32 @@ export default function ProjectPage() {
         <div className="flex justify-between items-center ">
           <div className="text-2xl font-semibold">{project?.name}</div>
           <div className="flex gap-1">
+            <Select
+              variant="faded"
+              selectedKeys={[filter]}
+              onSelectionChange={(keys) => {
+                setFilter(
+                  Array.from(keys)[0].toString() as
+                    | "all"
+                    | "pending"
+                    | "overdue"
+                );
+              }}
+              className="w-48 flex items-center"
+              placeholder="Filter"
+              label="Filter"
+              labelPlacement="outside-left"
+            >
+              <SelectItem key={"all"} value={"All"}>
+                All
+              </SelectItem>
+              <SelectItem key={"pending"} value={"Pending Due"}>
+                Pending Due
+              </SelectItem>
+              <SelectItem key={"overdue"} value={"Over Due"}>
+                Over Due
+              </SelectItem>
+            </Select>
             <Button
               variant="light"
               isIconOnly
@@ -73,6 +113,8 @@ export default function ProjectPage() {
           <div className="flex max-sm:flex-col gap-3 my-2">
             <TaskCategoryCard
               type="TODO"
+              filter={filter}
+              onTasksChange={(tasks) => setTasks(tasks)}
               tasks={tasks}
               isAdmin={
                 project?.managers.find((user) => user._id == user?._id)
@@ -85,7 +127,9 @@ export default function ProjectPage() {
             />
             <TaskCategoryCard
               type="In Progress"
+              filter={filter}
               tasks={tasks}
+              onTasksChange={(tasks) => setTasks(tasks)}
               isAdmin={
                 project?.managers.find((user) => user._id == user?._id)
                   ? true
@@ -97,6 +141,8 @@ export default function ProjectPage() {
             />
             <TaskCategoryCard
               type="Completed"
+              filter={filter}
+              onTasksChange={(tasks) => setTasks(tasks)}
               tasks={tasks}
               isAdmin={
                 project?.managers.find((user) => user._id == user?._id)

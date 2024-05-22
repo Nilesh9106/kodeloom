@@ -9,6 +9,7 @@ import CreateProject from "../pages/dashboard/project/Create";
 import ProjectPage from "../pages/dashboard/project/ProjectPage";
 import ProjectInfo from "../pages/dashboard/project/projectInfo";
 import { User } from "../types/auth";
+import { InvitePage } from "../pages/dashboard/invites/page";
 
 export const router = createBrowserRouter([
   {
@@ -75,6 +76,10 @@ export const router = createBrowserRouter([
       {
         path: "p/:id",
         element: <ProjectPage />,
+      },
+      {
+        path: "invites",
+        element: <InvitePage />,
       },
     ],
   },

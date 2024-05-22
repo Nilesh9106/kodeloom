@@ -54,11 +54,12 @@ const createTask = async (req, res) => {
 
 const updateTask = async (req, res) => {
     try {
-        const task = await Task.findById(req.params.id).populate("project");
+        let task = await Task.findById(req.params.id).populate("project");
         if (!task) return res.status(httpCode.NotFound).json({ message: "Task not found" });
-        if (task.assignedTo !== req.user._id && task.project.managers.indexOf(req.user._id) === -1) return res.status(httpCode.Unauthorized).json({ message: "You are not authorized to update this task" });
+        if (!task.project.members.find(u=>u.toString() == req.user._id.toString()) && !task.project.managers.find(u=>u.toString() == req.user._id.toString())) return res.status(httpCode.Unauthorized).json({ message: "You are not authorized to update this task" });
         task.set(req.body);
-        await task.save();
+        task= await (await task.save()).populate("assignedTo");
+        console.log(task);
         return res.json({ task: task });
     }
     catch (error) {
