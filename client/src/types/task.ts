@@ -10,9 +10,9 @@ export interface Task {
   description: string;
   status: string;
   priority: string;
-  dueDate: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  dueDate: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type TaskStatusType = "TODO" | "In Progress" | "Completed";

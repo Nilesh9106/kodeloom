@@ -1,14 +1,25 @@
 import { Button, Chip, Input, Textarea } from "@nextui-org/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useLoom from "../../../utils/context";
 import { useNavigate } from "react-router-dom";
 import { CreateProjectFormType } from "../../../types/project";
 import { ProjectService } from "../../../helpers/ProjectService";
-
-type Label = {
-  name: string;
-  color: string;
-};
+import { useFormik } from "formik";
+import * as yup from "yup";
+const schema = yup.object().shape({
+  name: yup.string().required("Name is required").min(3, "Name is too short"),
+  description: yup.string().required("Description is required"),
+  repo: yup.string().url("Invalid URL").required("Repository is required"),
+  labels: yup
+    .array()
+    .of(
+      yup.object().shape({
+        name: yup.string(),
+        color: yup.string(),
+      })
+    )
+    .min(1, "At least one label is required"),
+});
 
 export default function CreateProject() {
   const user = useLoom((state) => state.user);
@@ -17,20 +28,28 @@ export default function CreateProject() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [label, setLabel] = useState("");
-  const [project, setProject] = useState<CreateProjectFormType>({
+  const [initialValues, setInitialValues] = useState<CreateProjectFormType>({
     name: "",
     description: "",
     repo: "",
-    labels: [] as Label[],
+    labels: [],
     managers: [user?._id] as string[],
     members: [],
-    createdBy: user?._id ?? "",
+    createdBy: user?._id || "",
   });
 
-  const handleSubmit = async () => {
-    console.log(project);
+  const formik = useFormik({
+    initialValues: initialValues,
+    validationSchema: schema,
+    onSubmit: async (values) => {
+      handleSubmit(values);
+    },
+    enableReinitialize: true,
+  });
+
+  const handleSubmit = async (values: CreateProjectFormType) => {
     setLoading(true);
-    const data = await ProjectService.createProject(project);
+    const data = await ProjectService.createProject(values);
     if (data) {
       setProjects([...projects, data.project]);
       console.log(data.project);
@@ -38,38 +57,49 @@ export default function CreateProject() {
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (user?._id) {
+      setInitialValues({
+        ...initialValues,
+        createdBy: user?._id,
+        managers: [user?._id],
+      });
+    }
+  }, [user?._id]);
+
   return (
     <>
       <div className="flex flex-col gap-1 lg:px-10">
-        <h1 className="text-2xl font-bold ">Create Project</h1>
+        <h1 className="text-2xl font-bold ">CREATE PROJECT</h1>
         <div className="my-1 flex max-md:flex-col gap-2">
           <Input
             label="Name"
             isRequired
-            value={project.name}
-            onChange={(e) => {
-              setProject({ ...project, name: e.currentTarget.value });
-            }}
+            name="name"
+            value={formik.values.name}
+            onChange={formik.handleChange}
             variant="faded"
             type="text"
             radius="sm"
             placeholder="Project Name"
             labelPlacement="outside"
             className="md:flex-1"
+            errorMessage={formik.errors.name}
           />
           <Input
             label="Repository Link"
             isRequired
-            value={project.repo}
-            onChange={(e) =>
-              setProject({ ...project, repo: e.currentTarget.value })
-            }
+            value={formik.values.repo}
+            name="repo"
+            onChange={formik.handleChange}
             variant="faded"
             type="url"
             radius="sm"
             placeholder="Repository URL"
             labelPlacement="outside"
             className="md:flex-1"
+            errorMessage={formik.errors.repo}
           />
         </div>
         <div className="my-1">
@@ -80,26 +110,26 @@ export default function CreateProject() {
             labelPlacement="outside"
             placeholder="Enter your Project description"
             minRows={3}
-            value={project.description}
-            onChange={(e) =>
-              setProject({ ...project, description: e.currentTarget.value })
-            }
+            value={formik.values.description}
+            onChange={formik.handleChange}
+            name="description"
+            errorMessage={formik.errors.description}
           />
         </div>
         <div className="my-1 flex flex-col gap-2">
-          {project.labels.length > 0 && (
+          {formik.values.labels.length > 0 && (
             <div className="flex flex-wrap gap-1 ">
-              {project.labels.map((label, index) => (
+              {formik.values.labels.map((label, index) => (
                 <Chip
                   key={index}
                   style={{
                     color: label.color,
                   }}
                   onClose={() => {
-                    setProject({
-                      ...project,
-                      labels: project.labels.filter((_, i) => i !== index),
-                    });
+                    formik.setFieldValue(
+                      "labels",
+                      formik.values.labels.filter((_, i) => i !== index)
+                    );
                   }}
                   variant="flat"
                 >
@@ -113,18 +143,15 @@ export default function CreateProject() {
               if (e.key == "Enter" || e.keyCode == 188) {
                 e.preventDefault();
                 if (label.trim() == "") return;
-                setProject({
-                  ...project,
-                  labels: [
-                    ...project.labels,
-                    {
-                      name: label.trim(),
-                      color:
-                        "#" + Math.floor(Math.random() * 16777215).toString(16),
-                    },
-                  ],
-                });
                 setLabel("");
+                formik.setFieldValue("labels", [
+                  ...formik.values.labels,
+                  {
+                    name: label.trim(),
+                    color:
+                      "#" + Math.floor(Math.random() * 16777215).toString(16),
+                  },
+                ]);
               }
             }}
             onChange={(e) => {
@@ -135,17 +162,14 @@ export default function CreateProject() {
               ) {
                 e.preventDefault();
                 if (label.trim() == "") return;
-                setProject({
-                  ...project,
-                  labels: [
-                    ...project.labels,
-                    {
-                      name: label.trim(),
-                      color:
-                        "#" + Math.floor(Math.random() * 16777215).toString(16),
-                    },
-                  ],
-                });
+                formik.setFieldValue("labels", [
+                  ...formik.values.labels,
+                  {
+                    name: label.trim(),
+                    color:
+                      "#" + Math.floor(Math.random() * 16777215).toString(16),
+                  },
+                ]);
                 setLabel("");
               }
               setLabel(e.currentTarget.value);
@@ -158,13 +182,14 @@ export default function CreateProject() {
             placeholder="Labels for tasks"
             labelPlacement="outside"
             className="md:flex-1"
+            errorMessage={formik.errors.labels as string}
           />
         </div>
         <Button
           color="secondary"
           className="my-2"
           variant="solid"
-          onClick={handleSubmit}
+          onClick={() => formik.handleSubmit()}
           isLoading={loading}
         >
           {loading ? "Creating Project" : "Create Project"}

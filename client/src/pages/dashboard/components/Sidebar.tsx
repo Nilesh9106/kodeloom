@@ -9,6 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import useLoom from "../../../utils/context";
 import { useCallback, useEffect, useState } from "react";
 import { BsPeople } from "react-icons/bs";
+import { Logo } from "../../../components/Logo";
 
 type Props = {
   sideBar: boolean;
@@ -38,8 +39,16 @@ export default function Sidebar({ sideBar, setSideBar }: Props) {
       } fixed left-0 top-0 z-20 h-full w-64 origin-left transform overflow-y-auto overflow-x-hidden bg-neutral-950 pb-10 px-1 transition md:translate-x-0 shadow `}
     >
       <div className="flex justify-between items-center py-4 px-2">
-        <Link to="/dashboard" className="text-3xl font-bold">
-          Kodeloom
+        <Link
+          onClick={fetchData}
+          to="/dashboard"
+          className="text-3xl font-bold flex items-center justify-center gap-3"
+        >
+          <Logo />
+          <span>
+            <span className="text-violet-500">Kode</span>
+            <span>loom</span>
+          </span>
         </Link>
         <button
           onClick={() => setSideBar(false)}

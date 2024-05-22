@@ -11,13 +11,56 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthService } from "../../helpers/AuthService";
 import { toast } from "sonner";
+import { useFormik } from "formik";
+import { LoginFormType, RegisterFormType } from "../../types/auth";
+import * as yup from "yup";
+
+const loginSchema = yup.object().shape({
+  username: yup
+    .string()
+    .required("Username is required")
+    .transform((value) => value?.trim().toLowerCase()),
+  password: yup.string().required("Password is required"),
+});
+
+const registerSchema = yup.object().shape({
+  username: yup
+    .string()
+    .required("Username is required")
+    .test(
+      "whitespace",
+      "Username can not contain whitespace",
+      (value) => !/\s/.test(value)
+    )
+    .transform((value) => value?.trim().toLowerCase()),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(6, "Password is too short"),
+  name: yup.string().required("Name is required").min(3, "Name is too short"),
+  email: yup
+    .string()
+    .email("Invalid email")
+    .required("Email is required")
+    .transform((value) => value?.trim().toLowerCase()),
+});
 
 const Login = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const handleSubmit = async () => {
+
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+      password: "",
+    } as LoginFormType,
+    validationSchema: loginSchema,
+    onSubmit: async (values) => {
+      handleSubmit(values);
+    },
+  });
+
+  const handleSubmit = async ({ username, password }: LoginFormType) => {
     setLoading(true);
     const res = await AuthService.login({ username, password });
     if (res) {
@@ -30,26 +73,35 @@ const Login = () => {
   };
   return (
     <>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSubmit();
-        }}
-      >
+      <div>
         <Card>
           <CardBody>
             <Input
               isRequired
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={formik.values.username}
+              onChange={formik.handleChange}
+              errorMessage={formik.touched.username && formik.errors.username}
+              isInvalid={
+                formik.touched.username ? !!formik.errors.username : false
+              }
+              name="username"
+              variant="faded"
+              labelPlacement="outside"
               type="text"
               label="Username"
               className="my-2"
             />
             <Input
               isRequired
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              errorMessage={formik.touched.password && formik.errors.password}
+              isInvalid={
+                formik.touched.password ? !!formik.errors.password : false
+              }
+              name="password"
+              variant="faded"
+              labelPlacement="outside"
               type="password"
               label="Password"
               className="my-2"
@@ -59,6 +111,7 @@ const Login = () => {
             <Button
               isLoading={loading}
               isDisabled={loading}
+              onPress={() => formik.handleSubmit()}
               type="submit"
               fullWidth
               color="primary"
@@ -67,22 +120,30 @@ const Login = () => {
             </Button>
           </CardFooter>
         </Card>
-      </form>
+      </div>
     </>
   );
 };
 
 const SignUp = () => {
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+      password: "",
+      email: "",
+      name: "",
+    } as RegisterFormType,
+    validationSchema: registerSchema,
+    onSubmit: async (values) => {
+      handleSubmit(values);
+    },
+  });
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (body: RegisterFormType) => {
     setLoading(true);
-    const res = await AuthService.register({ email, username, password, name });
+    const res = await AuthService.register(body);
     if (res) {
       localStorage.setItem("token", res.token);
       localStorage.setItem("user", JSON.stringify(res.user));
@@ -92,44 +153,63 @@ const SignUp = () => {
     setLoading(false);
   };
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSubmit();
-      }}
-    >
+    <div>
       <Card>
         <CardBody>
           <Input
             type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={formik.values.username}
+            onChange={formik.handleChange}
+            errorMessage={formik.touched.username && formik.errors.username}
+            isInvalid={
+              formik.touched.username ? !!formik.errors.username : false
+            }
+            name="username"
+            variant="faded"
+            labelPlacement="outside"
             isRequired
             label="Username"
             className="my-2"
           />
           <Input
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={formik.values.name}
+            onChange={formik.handleChange}
+            errorMessage={formik.touched.name && formik.errors.name}
+            isInvalid={formik.touched.name ? !!formik.errors.name : false}
+            name="name"
             isRequired
+            variant="faded"
+            labelPlacement="outside"
             label="Name"
             className="my-2"
           />
           <Input
             isRequired
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            errorMessage={formik.touched.email && formik.errors.email}
+            isInvalid={formik.touched.email ? !!formik.errors.email : false}
+            name="email"
+            variant="faded"
+            labelPlacement="outside"
             type="email"
             label="Email"
             className="my-2"
           />
           <Input
             isRequired
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formik.values.password}
+            onChange={formik.handleChange}
+            errorMessage={formik.touched.password && formik.errors.password}
+            isInvalid={
+              formik.touched.password ? !!formik.errors.password : false
+            }
+            name="password"
             type="password"
             label="Password"
+            variant="faded"
+            labelPlacement="outside"
             className="my-2"
           />
         </CardBody>
@@ -140,12 +220,13 @@ const SignUp = () => {
             type="submit"
             fullWidth
             color="primary"
+            onPress={() => formik.handleSubmit()}
           >
             Sign up
           </Button>
         </CardFooter>
       </Card>
-    </form>
+    </div>
   );
 };
 

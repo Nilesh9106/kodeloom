@@ -32,8 +32,18 @@ export default function AddMember({ project }: { project: Project }) {
   const [loading, setLoading] = useState(false);
 
   const handleAddMember = async () => {
-    console.log(body);
-    setLoading(true);
+    if (!body.userId) {
+      toast.error("Please select a user");
+      return false;
+    }
+    if (!body.role) {
+      toast.error("Please select a role");
+      return false;
+    }
+    if (body.role != "manager" && body.role != "member") {
+      toast.error("Invalid Role");
+      return false;
+    }
     const data = await ProjectService.addMemberToProject(project._id!, body);
     if (data) {
       setProjects(
@@ -45,8 +55,9 @@ export default function AddMember({ project }: { project: Project }) {
         })
       );
       toast.success("Invite Sent Successfully");
+      return true;
     }
-    setLoading(false);
+    return false;
   };
 
   const handleSearch = async () => {
@@ -131,8 +142,12 @@ export default function AddMember({ project }: { project: Project }) {
                   isDisabled={loading}
                   isLoading={loading}
                   onPress={async () => {
-                    handleAddMember();
-                    onClose();
+                    setLoading(true);
+                    const res = await handleAddMember();
+                    setLoading(false);
+                    if (res) {
+                      onClose();
+                    }
                   }}
                 >
                   Add

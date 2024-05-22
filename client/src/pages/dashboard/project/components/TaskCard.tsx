@@ -44,7 +44,7 @@ const TaskCard = ({
         <span>{task.name}</span>
       </CardHeader>
       <CardBody className="flex flex-col gap-2">
-        <p className="dark:text-neutral-400 text-neutral-700">
+        <p className="dark:text-neutral-400 text-neutral-700 line-clamp-2">
           {task.description}
         </p>
         <Divider className="my-1" />

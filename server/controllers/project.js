@@ -75,6 +75,8 @@ const addMember = async (req, res) => {
             project = await Project.findById(req.params.id).populate("members managers createdBy");
             return res.json({ project: project })
         }
+        const invite = await Invite.findOne({ project: req.params.id, user: req.body.userId });
+        if (invite) return res.status(httpCode.BadRequest).json({ message: "Invite already sent" });
         await Invite.create({
             project: req.params.id,
             user: req.body.userId,

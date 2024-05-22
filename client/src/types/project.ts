@@ -30,8 +30,8 @@ export interface Project {
   members: User[];
   createdBy: User;
   managers: User[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type MemberFormType = {

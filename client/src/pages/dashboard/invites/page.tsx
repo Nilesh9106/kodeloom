@@ -67,13 +67,6 @@ export const InvitePage = () => {
   useEffect(() => {
     fetchInvites();
   }, [fetchInvites]);
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
   return (
     <div className="grid gap-4 md:px-8 sm:px-4 px-1">
       <Table
@@ -92,7 +85,12 @@ export const InvitePage = () => {
           <TableColumn>Role</TableColumn>
           <TableColumn>Actions</TableColumn>
         </TableHeader>
-        <TableBody emptyContent="No Invites to show" items={invites}>
+        <TableBody
+          loadingContent={<Spinner />}
+          loadingState={loading ? "loading" : "idle"}
+          emptyContent="No Invites to show"
+          items={invites}
+        >
           {(item) => {
             return (
               <TableRow key={item._id}>

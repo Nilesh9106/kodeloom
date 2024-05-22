@@ -43,18 +43,32 @@ export const TaskCategoryCard = ({
   useEffect(() => {
     if (filter == "overdue") {
       setFilteredTasks(
-        tasks.filter(
-          (task) => task.dueDate && new Date(task.dueDate) < new Date()
-        )
+        tasks
+          .filter((task) => task.dueDate && new Date(task.dueDate) < new Date())
+          .sort((a, b) => {
+            return (
+              new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime()
+            );
+          })
       );
     } else if (filter == "pending") {
       setFilteredTasks(
-        tasks.filter(
-          (task) => task.dueDate && new Date(task.dueDate) > new Date()
-        )
+        tasks
+          .filter((task) => task.dueDate && new Date(task.dueDate) > new Date())
+          .sort((a, b) => {
+            return (
+              new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime()
+            );
+          })
       );
     } else {
-      setFilteredTasks(tasks);
+      setFilteredTasks(
+        tasks.sort((a, b) => {
+          return (
+            new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime()
+          );
+        })
+      );
     }
   }, [filter, tasks]);
 

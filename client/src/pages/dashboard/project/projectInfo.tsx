@@ -145,8 +145,8 @@ export default function ProjectInfo() {
               </div>
               <div className="text-sm leading-tight text-default-400 my-2">
                 <span>
-                  Created <ReactTimeAgo date={project.createdAt} /> • Updated{" "}
-                  <ReactTimeAgo date={project.updatedAt} />{" "}
+                  Created <ReactTimeAgo date={new Date(project.createdAt)} /> •
+                  Updated <ReactTimeAgo date={new Date(project.updatedAt)} />{" "}
                 </span>
               </div>
             </div>

@@ -74,6 +74,7 @@ export default function ProjectPage() {
           <div className="flex gap-1">
             <Select
               variant="faded"
+              size="sm"
               selectedKeys={[filter]}
               onSelectionChange={(keys) => {
                 setFilter(
@@ -100,6 +101,7 @@ export default function ProjectPage() {
             </Select>
             <Button
               variant="light"
+              size="sm"
               isIconOnly
               as={Link}
               to={`/dashboard/p/${projectId}/info`}
