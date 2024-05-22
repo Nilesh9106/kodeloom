@@ -85,7 +85,8 @@ export default function CreateProject() {
             placeholder="Project Name"
             labelPlacement="outside"
             className="md:flex-1"
-            errorMessage={formik.errors.name}
+            errorMessage={formik.touched.name && formik.errors.name}
+            isInvalid={formik.touched.name ? !!formik.errors.name : false}
           />
           <Input
             label="Repository Link"
@@ -99,7 +100,8 @@ export default function CreateProject() {
             placeholder="Repository URL"
             labelPlacement="outside"
             className="md:flex-1"
-            errorMessage={formik.errors.repo}
+            errorMessage={formik.touched.repo && formik.errors.repo}
+            isInvalid={formik.touched.repo ? !!formik.errors.repo : false}
           />
         </div>
         <div className="my-1">
@@ -113,7 +115,12 @@ export default function CreateProject() {
             value={formik.values.description}
             onChange={formik.handleChange}
             name="description"
-            errorMessage={formik.errors.description}
+            errorMessage={
+              formik.touched.description && formik.errors.description
+            }
+            isInvalid={
+              formik.touched.description ? !!formik.errors.description : false
+            }
           />
         </div>
         <div className="my-1 flex flex-col gap-2">
@@ -182,7 +189,10 @@ export default function CreateProject() {
             placeholder="Labels for tasks"
             labelPlacement="outside"
             className="md:flex-1"
-            errorMessage={formik.errors.labels as string}
+            errorMessage={
+              formik.touched.labels && (formik.errors.labels as string)
+            }
+            isInvalid={formik.touched.labels ? !!formik.errors.labels : false}
           />
         </div>
         <Button

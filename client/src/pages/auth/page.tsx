@@ -31,8 +31,7 @@ const registerSchema = yup.object().shape({
       "whitespace",
       "Username can not contain whitespace",
       (value) => !/\s/.test(value)
-    )
-    .transform((value) => value?.trim().toLowerCase()),
+    ),
   password: yup
     .string()
     .required("Password is required")
@@ -56,7 +55,10 @@ const Login = () => {
     } as LoginFormType,
     validationSchema: loginSchema,
     onSubmit: async (values) => {
-      handleSubmit(values);
+      handleSubmit({
+        password: values.password,
+        username: values.username.trim().toLowerCase(),
+      });
     },
   });
 
@@ -137,7 +139,11 @@ const SignUp = () => {
     } as RegisterFormType,
     validationSchema: registerSchema,
     onSubmit: async (values) => {
-      handleSubmit(values);
+      handleSubmit({
+        ...values,
+        username: values.username.trim().toLowerCase(),
+        email: values.email.trim().toLowerCase(),
+      });
     },
   });
 

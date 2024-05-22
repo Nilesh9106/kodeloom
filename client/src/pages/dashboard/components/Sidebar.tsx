@@ -36,7 +36,7 @@ export default function Sidebar({ sideBar, setSideBar }: Props) {
     <nav
       className={`${
         sideBar ? "translate-x-0" : "-translate-x-full"
-      } fixed left-0 top-0 z-20 h-full w-64 origin-left transform overflow-y-auto overflow-x-hidden bg-neutral-950 pb-10 px-1 transition md:translate-x-0 shadow `}
+      } fixed left-0 top-0 *:z-50 z-50 h-full w-64 origin-left transform overflow-y-auto overflow-x-hidden bg-neutral-950 pb-10 px-1 transition md:translate-x-0 shadow `}
     >
       <div className="flex justify-between items-center py-4 px-2">
         <Link

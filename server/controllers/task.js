@@ -56,7 +56,7 @@ const updateTask = async (req, res) => {
     try {
         let task = await Task.findById(req.params.id).populate("project");
         if (!task) return res.status(httpCode.NotFound).json({ message: "Task not found" });
-        if (!task.project.members.find(u=>u.toString() == req.user._id.toString()) && !task.project.managers.find(u=>u.toString() == req.user._id.toString())) return res.status(httpCode.Unauthorized).json({ message: "You are not authorized to update this task" });
+        if (!task.project.members.find(u=>u.toString() == req.user._id.toString()) && !task.project.managers.find(u=>u.toString() == req.user._id.toString())) return res.status(httpCode.BadRequest).json({ message: "You are not authorized to update this task" });
         task.set(req.body);
         task= await (await task.save()).populate("assignedTo");
         console.log(task);
@@ -72,7 +72,7 @@ const deleteTask = async (req, res) => {
     try {
         const task = await Task.findById(req.params.id).populate("project");
         if (!task) return res.status(httpCode.NotFound).json({ message: "Task not found "});
-        if (task.project.managers.indexOf(req.user._id) === -1) return res.status(httpCode.Unauthorized).json({ message: "You are not authorized to delete this task "});
+        if (task.project.managers.indexOf(req.user._id) === -1) return res.status(httpCode.BadRequest).json({ message: "You are not authorized to delete this task "});
         await task.remove();
         return res.json({message: "Task deleted successfully"});
     }
