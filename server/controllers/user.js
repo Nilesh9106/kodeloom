@@ -29,7 +29,7 @@ const getUserByUsername = async (req, res) => {
 
 const updateUser = async (req, res) => {
     try {
-        if (req.params.id !== req.user._id) return res.status(httpCode.Unauthorized).json({ message: "You can only update your account" });
+        if (req.params.id !== req.user._id.toString()) return res.status(httpCode.Unauthorized).json({ message: "You can only update your account" });
         const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).select('-password');
         return res.json({ user: user });
     } catch (error) {
@@ -40,7 +40,7 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
     try {
-        if (req.params.id !== req.user._id) return res.status(httpCode.Unauthorized).json({ message: "You can only delete your account" });
+        if (req.params.id !== req.user._id.toString()) return res.status(httpCode.Unauthorized).json({ message: "You can only delete your account" });
         const user = await User.findByIdAndDelete(req.params.id);
         return res.json({ user: user });
     } catch (error) {

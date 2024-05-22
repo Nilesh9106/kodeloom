@@ -18,3 +18,9 @@ export type User = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type UpdateUserFormType = {
+  name?: string;
+  email?: string;
+  avatar?: string;
+};

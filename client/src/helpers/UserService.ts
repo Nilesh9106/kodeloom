@@ -1,4 +1,4 @@
-import { User } from "../types/auth";
+import { UpdateUserFormType, User } from "../types/auth";
 import api from "../utils/api";
 import { apiRoutes } from "../utils/apiRoutes";
 import { errorHandler } from "../utils/handler";
@@ -16,12 +16,14 @@ export class UserService {
       user: User;
     };
   });
-  static updateUser = errorHandler(async (id: string, body: User) => {
-    const { data } = await api.put(apiRoutes.user.update(id), body);
-    return data as {
-      user: User;
-    };
-  });
+  static updateUser = errorHandler(
+    async (id: string, body: UpdateUserFormType) => {
+      const { data } = await api.put(apiRoutes.user.update(id), body);
+      return data as {
+        user: User;
+      };
+    }
+  );
   static deleteUser = errorHandler(async (id: string) => {
     const { data } = await api.delete(apiRoutes.user.delete(id));
     return data as {

@@ -69,6 +69,14 @@ export default function ProjectInfo() {
     const res = await ProjectService.makeManager(id, userId);
     if (res) {
       setProject(res.project);
+      setProjects(
+        projects.map((p) => {
+          if (p._id === res.project._id) {
+            return res.project;
+          }
+          return p;
+        })
+      );
       toast.success("Manager Added Successfully");
     }
     toast.dismiss(token);
@@ -81,6 +89,14 @@ export default function ProjectInfo() {
     const res = await ProjectService.removeManager(id, userId);
     if (res) {
       setProject(res.project);
+      setProjects(
+        projects.map((p) => {
+          if (p._id === res.project._id) {
+            return res.project;
+          }
+          return p;
+        })
+      );
       toast.success("Manager Removed Successfully");
     }
     toast.dismiss(token);

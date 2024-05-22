@@ -1,4 +1,5 @@
 const Project = require('../models/project');
+const Task = require('../models/task');
 const httpCode = require('../constants/httpCode');
 
 const getProjectById = async (req, res) => {
@@ -36,7 +37,7 @@ const updateProject = async (req, res) => {
     try {
         const project = await Project.findById(req.params.id);
         if (!project) return res.status(httpCode.NotFound).json({ message: "Project not found" });
-        if (project.managers.indexOf(req.user._id) === -1) return res.status(httpCode.BadRequest).json({ message: "You are not authorized to update this project",  });
+        if (!project.managers.find(u=>u._id.toString()==req.user._id.toString())) return res.status(httpCode.BadRequest).json({ message: "Only manager of the project can update project",  });
 
         project.set(req.body);
         await project.save();
@@ -52,7 +53,8 @@ const deleteProject = async (req, res) => {
     try {
         const project = await Project.findById(req.params.id);
         if (!project) return res.status(httpCode.NotFound).json({ message: "Project not found" });
-        if (project.managers.indexOf(req.user._id) === -1) return res.status(httpCode.Unauthorized).json({ message: "You are not authorized to delete this project" });
+        if (project.createdBy.toString() != req.user._id.toString()) return res.status(httpCode.Unauthorized).json({ message: "Only Creator of Project can delete Project" });
+        await Task.deleteMany({ project: project._id });
         await project.remove();
         return res.json({ message: "Project deleted successfully"});
     }
@@ -66,21 +68,17 @@ const addMember = async (req, res) => {
     try {
         let project = await Project.findById(req.params.id);
         if (!project) return res.status(httpCode.NotFound).json({ message: "Project not found" });
-        if (project.managers.find(u=>u._id.toString() == req.user._id.toString()) === -1) return res.status(httpCode.Unauthorized).json({ message: "You are not authorized to delete this project",  });
+        if (!project.managers.find(u=>u._id.toString() == req.user._id.toString())) return res.status(httpCode.Unauthorized).json({ message: "You are not authorized to delete this project",  });
 
         if (project.managers.find(u=>u._id.toString() == req.body.userId) || project.members.find(u=>u._id.toString() == req.body.userId) ) {
             project = await Project.findById(req.params.id).populate("members managers createdBy");
-            console.log("already a member");
             return res.json({ project: project })
         }
         if (req.body.role == "member") {
-            project.members.push(req.body.userId);
+            project = await Project.findByIdAndUpdate(req.params.id,{$addToSet: {members:req.body.userId}},{new:true}).populate("members managers createdBy");
         } else {
-            project.managers.push(req.body.userId);
+            project = await Project.findByIdAndUpdate(req.params.id,{$addToSet: {managers:req.body.userId}},{new:true}).populate("members managers createdBy");
         }
-        console.log("added");
-        await project.save();
-        project = await Project.findById(req.params.id).populate("members managers createdBy");
         return res.json({ project: project });
     }
     catch (error) {
@@ -97,19 +95,8 @@ const removeMember = async (req, res) => {
         if(req.body.userId == project.createdBy.toString()){
             return res.status(httpCode.BadRequest).json({ message: "You can't remove the creator of the project",  });
         }
-
-        if (!project.managers.find(u=>u._id.toString() == req.body.userId) && !project.members.find(u=>u._id.toString() == req.body.userId)) {
-            project = await Project.findById(req.params.id).populate("members managers createdBy");
-            return res.json({ project: project,  })
-        }
-        if (req.body.role == "member") {
-            project.members = project.members.filter(member => member.toString() !== req.body.userId);
-        } else {
-            project.managers = project.managers.filter(manager => manager.toString() !== req.body.userId);
-        }
-        await project.save();
-        project = await Project.findById(req.params.id).populate("members managers createdBy");
-        return res.json({ project: project,  });
+        project = await Project.findByIdAndUpdate(req.params.id,{$pull: {members:req.body.userId,managers:req.body.userId}},{new:true}).populate("members managers createdBy");
+        return res.json({ project: project });
     }
     catch (error) {
         console.log(error);
@@ -124,15 +111,7 @@ const makeManager = async (req, res) => {
         if(req.user._id.toString() != project.createdBy.toString()){
             return res.status(httpCode.Unauthorized).json({ message: "Only Project creator can make manager" });
         }
-        if (project.managers.find(u=>u._id.toString() == req.body.userId)) {
-            project = await Project.findById(req.params.id).populate("members managers createdBy");
-            return res.json({ project: project,  })
-        }
-        project.members = project.members.filter(member => member.toString() !== req.body.userId);
-        
-        project.managers.push(req.body.userId);
-        await project.save();
-        project = await Project.findById(req.params.id).populate("members managers createdBy");
+        project = await Project.findByIdAndUpdate(req.params.id, {$addToSet: {managers: req.body.userId}, $pull: {members: req.body.userId}},{new:true}).populate("members managers createdBy");
         return res.json({ project: project,  });
     }
     catch (error) {
@@ -148,16 +127,7 @@ const removeManager = async (req,res)=>{
         if(req.user._id.toString() != project.createdBy.toString()){
             return res.status(httpCode.Unauthorized).json({ message: "Only Project creator can remove manager" });
         }
-        if (!project.managers.find(u=>u._id.toString() == req.body.userId)) {
-            project = await Project.findById(req.params.id).populate("members managers createdBy");
-            return res.json({ project: project,  })
-        }
-        project.managers = project.managers.filter(manager => manager.toString() !== req.body.userId);
-        if(!project.managers.find(u=>u._id.toString() == req.body.userId)){
-            project.members.push(req.body.userId);
-        }
-        await project.save();
-        project = await Project.findById(req.params.id).populate("members managers createdBy");
+        project = await Project.findByIdAndUpdate(req.params.id, {$pull: {managers: req.body.userId}, $addToSet: {members: req.body.userId}},{new:true}).populate("members managers createdBy");
         return res.json({ project: project,  });
     } catch (error) {
         console.log(error);

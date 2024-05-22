@@ -5,9 +5,8 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-  Input,
 } from "@nextui-org/react";
-import { MdMenu, MdSearch } from "react-icons/md";
+import { MdMenu } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import useLoom from "../../../utils/context";
 
@@ -20,17 +19,8 @@ export default function TopHeader({ sideBar, setSideBar }: Props) {
   const user = useLoom((state) => state.user);
   const navigate = useNavigate();
   return (
-    <header className="flex w-full items-center justify-between py-3 px-4 dark:bg-neutral-900/70 backdrop-blur-lg">
-      <Input
-        placeholder="Search..."
-        size="sm"
-        type="search"
-        variant="faded"
-        labelPlacement="outside"
-        startContent={<MdSearch className="text-xl" />}
-        className="sm:w-80 w-40"
-      />
-      <div className="flex gap-2">
+    <header className="flex w-full items-center justify-end py-3 px-4 dark:bg-neutral-900/70 backdrop-blur-lg">
+      <div className="flex gap-2 ">
         <Dropdown>
           <DropdownTrigger>
             <Avatar
@@ -38,7 +28,7 @@ export default function TopHeader({ sideBar, setSideBar }: Props) {
               size="sm"
               as="button"
               className="transition-transform"
-              src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+              src={user?.avatar}
             />
           </DropdownTrigger>
           <DropdownMenu variant="flat">
@@ -48,7 +38,6 @@ export default function TopHeader({ sideBar, setSideBar }: Props) {
             >
               View Profile
             </DropdownItem>
-            <DropdownItem key="settings">Settings</DropdownItem>
             <DropdownItem
               key="logout"
               onClick={() => {
