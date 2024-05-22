@@ -1,104 +1,30 @@
 import axios from "axios";
-import { toast } from "react-toastify";
 
-export const postCall = async (endPoint: string, data: unknown) => {
-    try {
-        const response = await axios.post(`${import.meta.env.VITE_API_URI}${endPoint}`, data, {
-            headers: localStorage.getItem('token') ? {
-                'Authorization': `${localStorage.getItem('token')}`
-            } : {}
-        });
-        return response.data;
-    } catch (error) {
-        // console.log(error);
-        if (axios.isAxiosError(error)) {
-            if (error.response?.status === 401) {
-                localStorage.removeItem('token')
-                localStorage.removeItem('user')
-                toast.error("Session expired")
-                window.location.href = '/auth'
-            }
-            console.log(error);
-            toast.error(error.response?.data?.message ?? "Something went wrong")
-        } else {
-            toast.error("Something went wrong")
-        }
-        return null;
-    }
-}
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URI,
+  headers: {
+    Accept: "application/json",
+    "content-type": "application/json",
+  },
+});
 
-export const putCall = async (endPoint: string, data: unknown) => {
+api.interceptors.request.use(
+  async (config) => {
     try {
-        const response = await axios.put(`${import.meta.env.VITE_API_URI}${endPoint}`, data, {
-            headers: localStorage.getItem('token') ? {
-                'Authorization': `${localStorage.getItem('token')}`
-            } : {}
-        });
-        return response.data;
-    } catch (error) {
-        // console.log(error);
-        if (axios.isAxiosError(error)) {
-            if (error.response?.status === 401) {
-                localStorage.removeItem('token')
-                localStorage.removeItem('user')
-                toast.error("Session expired")
-                window.location.href = '/auth'
-            }
-            console.log(error);
-            toast.error(error.response?.data?.message ?? "Something went wrong")
-        } else {
-            toast.error("Something went wrong")
-        }
-        return null;
-    }
-}
+      const token = localStorage.getItem("token");
 
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
 
-export const getCall = async (endPoint: string) => {
-    try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URI}${endPoint}`, {
-            headers: localStorage.getItem('token') ? {
-                'Authorization': `${localStorage.getItem('token')}`
-            } : {}
-        });
-        return response.data;
+      return config;
     } catch (error) {
-        console.log(error);
-        if (axios.isAxiosError(error)) {
-            if (error.response?.status === 401) {
-                localStorage.removeItem('token')
-                localStorage.removeItem('user')
-                toast.error("Session expired")
-                window.location.href = '/auth'
-            }
-            toast.error(error.response?.data?.message ?? "Something went wrong")
-        } else {
-            toast.error("Something went wrong")
-        }
-        return null;
+      console.error("Error fetching token:", error);
+      return Promise.reject(error);
     }
-}
-export const deleteCall = async (endPoint: string) => {
-    try {
-        const response = await axios.delete(`${import.meta.env.VITE_API_URI}${endPoint}`, {
-            headers: localStorage.getItem('token') ? {
-                'Authorization': `${localStorage.getItem('token')}`
-            } : {}
-        });
-        return response.data;
-    } catch (error) {
-        console.log(error);
-        if (axios.isAxiosError(error)) {
-            if (error.response?.status === 401) {
-                localStorage.removeItem('token')
-                localStorage.removeItem('user')
-                toast.error("Session expired")
-                window.location.href = '/auth'
-            }
-            toast.error(error.response?.data?.message ?? "Something went wrong")
-        } else {
-            toast.error("Something went wrong")
-        }
-        return null;
-    }
-}
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+export default api;

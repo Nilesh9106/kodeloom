@@ -1,0 +1,25 @@
+const errorCode = {
+    NotFound: 404,
+    BadRequest: 400,
+    Unauthorized: 401,
+    Forbidden: 403,
+    InternalServerError: 500,
+    Created : 201,
+    OK : 200,
+    Conflict : 409,
+    UnprocessableEntity : 422,
+    ServiceUnavailable : 503,
+    GatewayTimeout : 504,
+    BadGateway : 502,
+    MethodNotAllowed : 405,
+    RequestTimeout : 408,
+    LengthRequired : 411,
+    TooManyRequests : 429,
+    NotAcceptable : 406,
+    RequestEntityTooLarge : 413,
+    RequestURITooLong : 414,
+    UnsupportedMediaType : 415,
+    NoContent: 204,
+}
+
+module.exports = errorCode;
