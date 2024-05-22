@@ -178,7 +178,7 @@ const TaskModal = ({
                     </Button>
                   </div>
                   <span className="font-semibold ">
-                    Due Date: <ReactTimeAgo date={task.dueDate} />
+                    Due Date: <ReactTimeAgo date={new Date(task.dueDate)} />
                   </span>
 
                   <Divider className="my-1" />
@@ -200,10 +200,10 @@ const TaskModal = ({
                   </div>
                   <div className="flex flex-col items-end">
                     <p className="text-sm">
-                      Created <ReactTimeAgo date={task.createdAt} />{" "}
+                      Created <ReactTimeAgo date={new Date(task.createdAt)} />{" "}
                     </p>
                     <p className="text-sm">
-                      Updated <ReactTimeAgo date={task.updatedAt} />
+                      Updated <ReactTimeAgo date={new Date(task.updatedAt)} />
                     </p>
                   </div>
                 </CardBody>
