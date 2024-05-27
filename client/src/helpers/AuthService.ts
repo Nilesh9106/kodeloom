@@ -18,4 +18,10 @@ export class AuthService {
       user: User;
     };
   });
+  static verifyEmail = errorHandler(async (token: string) => {
+    const { data } = await api.get(apiRoutes.auth.verifyEmail(token));
+    return data as {
+      message: string;
+    };
+  });
 }

@@ -10,6 +10,7 @@ import ProjectPage from "../pages/dashboard/project/ProjectPage";
 import ProjectInfo from "../pages/dashboard/project/projectInfo";
 import { User } from "../types/auth";
 import { InvitePage } from "../pages/dashboard/invites/page";
+import VerifyEmail from "../pages/auth/verify/page";
 
 export const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ export const router = createBrowserRouter([
       {
         path: "users/:username",
         element: <Profile />,
+      },
+      {
+        path: "verifyEmail/:token",
+        element: <VerifyEmail />,
       },
     ],
   },

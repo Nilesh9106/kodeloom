@@ -129,7 +129,6 @@ const Login = () => {
 
 const SignUp = () => {
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -151,10 +150,7 @@ const SignUp = () => {
     setLoading(true);
     const res = await AuthService.register(body);
     if (res) {
-      localStorage.setItem("token", res.token);
-      localStorage.setItem("user", JSON.stringify(res.user));
-      toast.success("SignUp successful");
-      navigate("/");
+      toast.success("Account created! please verify your email");
     }
     setLoading(false);
   };

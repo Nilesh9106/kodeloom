@@ -2,6 +2,7 @@ export const apiRoutes = {
   auth: {
     login: "auth",
     register: "auth/register",
+    verifyEmail: (token: string) => `auth/verify/${token}`,
   },
   user: {
     search: (username?: string) =>

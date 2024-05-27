@@ -2,6 +2,7 @@ const Project = require('../models/project');
 const Task = require('../models/task');
 const Invite = require('../models/invite');
 const httpCode = require('../constants/httpCode');
+const { sendInviteMail } = require('../utils/mailer');
 
 const getProjectById = async (req, res) => {
     try {
@@ -75,13 +76,16 @@ const addMember = async (req, res) => {
             project = await Project.findById(req.params.id).populate("members managers createdBy");
             return res.json({ project: project })
         }
-        const invite = await Invite.findOne({ project: req.params.id, user: req.body.userId });
+        let invite = await Invite.findOne({ project: req.params.id, user: req.body.userId });
         if (invite) return res.status(httpCode.BadRequest).json({ message: "Invite already sent" });
-        await Invite.create({
+        invite =await (await Invite.create({
             project: req.params.id,
             user: req.body.userId,
             role: req.body.role
-        })
+        })).populate("project user");
+        if(invite){
+            await sendInviteMail(invite.user.email,invite.project,invite.role);
+        }
         project = await project.populate("members managers createdBy");
         return res.json({ project: project });
     }

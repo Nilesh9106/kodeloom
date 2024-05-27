@@ -1,5 +1,7 @@
 const Task = require('../models/task');
 const Project = require('../models/project');
+const User = require('../models/user');
+const { sendTaskAssignMail } = require('../utils/mailer');
 const httpCode = require('../constants/httpCode');
 
 const getTaskById = async (req, res) => {
@@ -44,7 +46,8 @@ const getTasksByUserIdAndProjectId = async (req, res) => {
 
 const createTask = async (req, res) => {
     try {
-        const task = await Task.create(req.body);
+        const task =await (await Task.create(req.body)).populate("assignedTo project");
+        await sendTaskAssignMail(task.assignedTo.email,task)
         return res.json({ task: task });
     } catch (error) {
         console.log(error);

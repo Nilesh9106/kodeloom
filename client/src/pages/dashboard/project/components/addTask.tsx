@@ -82,6 +82,7 @@ export default function AddTask({
     if (data) {
       onAdd();
       setLoading(false);
+      toast.success("Task created successfully");
       onOpenChange();
       return;
     }
