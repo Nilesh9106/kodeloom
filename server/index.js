@@ -10,7 +10,9 @@ const inviteRouter = require('./routes/invite')
 require('dotenv').config()
 const app = express()
 
-app.use(cors())
+app.use(cors({
+    origin: true,
+}))
 app.use(express.json())
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.url}`);
