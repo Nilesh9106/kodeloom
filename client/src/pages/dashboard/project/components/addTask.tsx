@@ -70,7 +70,6 @@ export default function AddTask({
     initialValues: initialValues,
     validationSchema: schema,
     onSubmit: async (values) => {
-      console.log(values);
       await handleSubmit(values);
     },
     enableReinitialize: true,
@@ -127,12 +126,9 @@ export default function AddTask({
                         placeholder="Task name"
                         variant="faded"
                         labelPlacement="outside"
+                        errorMessage={formik.touched.name && formik.errors.name}
+                        isInvalid={formik.touched.name && !!formik.errors.name}
                       />
-                      {formik.errors.name && (
-                        <span className="text-red-500 m-2 text-sm">
-                          {formik.errors.name}
-                        </span>
-                      )}
                     </div>
                     {/* assignee */}
                     <div>
@@ -144,6 +140,13 @@ export default function AddTask({
                         labelPlacement="outside"
                         selectedKey={assignee}
                         isRequired
+                        errorMessage={
+                          formik.touched.assignedTo && formik.errors.assignedTo
+                        }
+                        isInvalid={
+                          formik.touched.assignedTo &&
+                          !!formik.errors.assignedTo
+                        }
                         allowsCustomValue={false}
                         onSelectionChange={(key) => {
                           if (!key) return;
@@ -173,11 +176,6 @@ export default function AddTask({
                           </AutocompleteItem>
                         )}
                       </Autocomplete>
-                      {formik.errors.assignedTo && (
-                        <span className="text-red-500 m-2 text-sm">
-                          {formik.errors.assignedTo}
-                        </span>
-                      )}
                     </div>
 
                     {/* labels */}
@@ -192,6 +190,14 @@ export default function AddTask({
                           selectedKeys={formik.values.labels.map(
                             (label) => label.name
                           )}
+                          errorMessage={
+                            formik.touched.labels &&
+                            formik.errors.labels instanceof String &&
+                            formik.errors.labels
+                          }
+                          isInvalid={
+                            formik.touched.labels && !!formik.errors.labels
+                          }
                           onSelectionChange={(keys) => {
                             // setFilter({ ...filter, genres: Array.from(keys) as string[] })
                             const temp = Array.from(keys).map((key) => {
@@ -245,11 +251,6 @@ export default function AddTask({
                             );
                           })}
                         </Select>
-                        {formik.errors.labels && (
-                          <span className="text-red-500 m-2 text-sm">
-                            {formik.errors.labels as string}
-                          </span>
-                        )}
                       </div>
                       {/* priority */}
                       <div className="md:flex-1">
@@ -266,6 +267,12 @@ export default function AddTask({
                               Array.from(keys)[0].toString()
                             );
                           }}
+                          errorMessage={
+                            formik.touched.priority && formik.errors.priority
+                          }
+                          isInvalid={
+                            formik.touched.priority && !!formik.errors.priority
+                          }
                         >
                           <SelectItem key={"Low"} className="text-green-500">
                             Low
@@ -281,11 +288,6 @@ export default function AddTask({
                           </SelectItem>
                         </Select>
                       </div>
-                      {formik.errors.priority && (
-                        <span className="text-red-500 m-2 text-sm">
-                          {formik.errors.priority}
-                        </span>
-                      )}
                     </div>
                     {/* description */}
                     <div className="my-1">
@@ -303,12 +305,15 @@ export default function AddTask({
                             e.currentTarget.value
                           )
                         }
+                        errorMessage={
+                          formik.touched.description &&
+                          formik.errors.description
+                        }
+                        isInvalid={
+                          formik.touched.description &&
+                          !!formik.errors.description
+                        }
                       />
-                      {formik.errors.description && (
-                        <span className="text-red-500 m-2 text-sm">
-                          {formik.errors.description}
-                        </span>
-                      )}
                     </div>
                     {/* dueDate */}
                     <div>
@@ -323,12 +328,13 @@ export default function AddTask({
                         placeholder="Due Date"
                         variant="faded"
                         labelPlacement="outside"
+                        errorMessage={
+                          formik.touched.dueDate && formik.errors.dueDate
+                        }
+                        isInvalid={
+                          formik.touched.dueDate && !!formik.errors.dueDate
+                        }
                       />
-                      {formik.errors.dueDate && (
-                        <span className="text-red-500 m-2 text-sm">
-                          {formik.errors.dueDate}
-                        </span>
-                      )}
                     </div>
                   </div>
                 </ModalBody>

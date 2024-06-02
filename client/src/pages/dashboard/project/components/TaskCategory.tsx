@@ -95,7 +95,7 @@ export const TaskCategoryCard = ({
               .map((task) => (
                 <TaskCard
                   key={task._id}
-                  tasks={tasks}
+                  tasks={filteredTasks}
                   task={task}
                   onOpen={onOpen}
                   setSelectedTask={setSelectedTask}
