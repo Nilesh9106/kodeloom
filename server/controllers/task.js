@@ -60,8 +60,12 @@ const updateTask = async (req, res) => {
         let task = await Task.findById(req.params.id).populate("project");
         if (!task) return res.status(httpCode.NotFound).json({ message: "Task not found" });
         if (!task.project.members.find(u=>u.toString() == req.user._id.toString()) && !task.project.managers.find(u=>u.toString() == req.user._id.toString())) return res.status(httpCode.BadRequest).json({ message: "You are not authorized to update this task" });
+        const oldAssignedTo = task.assignedTo;
         task.set(req.body);
         task= await (await task.save()).populate("assignedTo");
+        if(req.body.assignedTo && oldAssignedTo.toString() !== req.body.assignedTo.toString()){
+            await sendTaskAssignMail(task.assignedTo.email,task)
+        }
         console.log(task);
         return res.json({ task: task });
     }

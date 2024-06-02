@@ -7,7 +7,8 @@ dotenv.config();
 
 const login = async (request, response) => {
     try {
-        const user = await User.findOne({ username: request.body.username });
+        const username = request.body.username.toLowerCase().trim();
+        const user = await User.findOne({ username:  username});
         if (!user) {
             return response.status(httpCode.NotFound).json({
                 message: 'user not found',
@@ -39,6 +40,8 @@ const login = async (request, response) => {
 
 const register = async (request, response) => {
     try {
+        const email = request.body.email.toLowerCase().trim();
+        const username = request.body.username.toLowerCase().trim();
         const userExists = await User.findOne({ $or: [{ username: request.body.username }, { email: request.body.email }] });
         if (userExists) {
             return response.status(httpCode.BadRequest).json({

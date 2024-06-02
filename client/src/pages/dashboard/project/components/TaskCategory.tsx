@@ -115,7 +115,7 @@ export const TaskCategoryCard = ({
         }}
         project={project}
         onOpenChange={onOpenChange}
-        task={filteredTasks[selectedTask]}
+        task={filteredTasks[selectedTask] ?? undefined}
         onStatusChange={async (val: string) => {
           await onStatusChange(
             val as TaskStatusType,
