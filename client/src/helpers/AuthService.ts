@@ -1,6 +1,7 @@
 import { LoginFormType, RegisterFormType, User } from "../types/auth";
 import api from "../utils/api";
 import { apiRoutes } from "../utils/apiRoutes";
+import useLoom from "../utils/context";
 import { errorHandler } from "../utils/handler";
 
 export class AuthService {
@@ -24,4 +25,10 @@ export class AuthService {
       message: string;
     };
   });
+  static logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    useLoom.getState().setProjects([]);
+    useLoom.getState().setUser(null);
+  };
 }

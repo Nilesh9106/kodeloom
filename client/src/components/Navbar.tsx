@@ -12,6 +12,7 @@ import {
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import { SiGithub } from "react-icons/si";
 import { Logo } from "./Logo";
+import { AuthService } from "../helpers/AuthService";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -47,8 +48,7 @@ export default function Header() {
             <NavbarItem>
               <Button
                 onClick={() => {
-                  localStorage.removeItem("token");
-                  localStorage.removeItem("user");
+                  AuthService.logout();
                   navigate("/auth");
                 }}
                 color="danger"

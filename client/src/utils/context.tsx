@@ -7,7 +7,7 @@ interface MyState {
   projects: Project[];
   user: User | null;
   setProjects: (project: Project[]) => void;
-  setUser: (user: User) => void;
+  setUser: (user: User | null) => void;
   fetchProjects: () => Promise<void>;
 }
 

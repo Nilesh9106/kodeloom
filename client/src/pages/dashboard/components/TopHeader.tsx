@@ -9,6 +9,7 @@ import {
 import { MdMenu } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import useLoom from "../../../utils/context";
+import { AuthService } from "../../../helpers/AuthService";
 
 type Props = {
   sideBar: boolean;
@@ -41,8 +42,7 @@ export default function TopHeader({ sideBar, setSideBar }: Props) {
             <DropdownItem
               key="logout"
               onClick={() => {
-                localStorage.removeItem("token");
-                localStorage.removeItem("user");
+                AuthService.logout();
                 navigate("/");
               }}
               className="text-danger"
