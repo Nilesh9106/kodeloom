@@ -54,7 +54,7 @@ export default function AddTask({
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
-  const [assignee, setAssignee] = useState("");
+  const [assignee, setAssignee] = useState<string>("");
   const [initialValues, setInitialValues] = useState<TaskFormType>({
     name: "",
     assignedTo: "",
@@ -77,7 +77,10 @@ export default function AddTask({
 
   const handleSubmit = async (task: TaskFormType) => {
     setLoading(true);
-    const data = await TaskService.createTask(task);
+    const data = await TaskService.createTask({
+      ...task,
+      assignedTo: task.assignedTo == "Unassigned" ? null : task.assignedTo,
+    });
     if (data) {
       onAdd();
       setLoading(false);
@@ -133,7 +136,16 @@ export default function AddTask({
                     {/* assignee */}
                     <div>
                       <Autocomplete
-                        defaultItems={[...project.members, ...project.managers]}
+                        defaultItems={[
+                          {
+                            _id: null,
+                            name: "Unassigned",
+                            email: "",
+                            avatar: null,
+                          },
+                          ...project.members,
+                          ...project.managers,
+                        ]}
                         variant="faded"
                         label="Assigned to"
                         placeholder="Select a user"
@@ -156,7 +168,7 @@ export default function AddTask({
                       >
                         {(user) => (
                           <AutocompleteItem
-                            key={user._id}
+                            key={user._id ?? "Unassigned"}
                             textValue={user.name}
                           >
                             <div className="flex gap-2 items-center">
@@ -164,7 +176,7 @@ export default function AddTask({
                                 alt={user.name}
                                 className="flex-shrink-0"
                                 size="sm"
-                                src={user.avatar}
+                                src={user.avatar ?? undefined}
                               />
                               <div className="flex flex-col">
                                 <span className="text-small">{user.name}</span>

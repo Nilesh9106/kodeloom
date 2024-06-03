@@ -26,6 +26,19 @@ const getProjectsByUserId = async (req, res) => {
 
 const createProject = async (req, res) => {
     try {
+        // remove duplicate labels
+        let labels = req.body.labels ?? [];
+        let uniqueLabels = [];
+        let uniqueLabelNames = [];
+        for (let i = 0; i < labels.length; i++) {
+            const label = labels[i];
+            if (!uniqueLabelNames.includes(label.name)) {
+                uniqueLabels.push(label);
+                uniqueLabelNames.push(label.name);
+            }
+        }
+        req.body.labels = uniqueLabels;
+        console.log(req.body.labels);
         let project = (await Project.create(req.body));
         project = await Project.findById(project._id).populate('members').populate('managers createdBy');
         return res.json({ project: project});
@@ -104,6 +117,7 @@ const removeMember = async (req, res) => {
             return res.status(httpCode.BadRequest).json({ message: "You can't remove the creator of the project",  });
         }
         project = await Project.findByIdAndUpdate(req.params.id,{$pull: {members:req.body.userId,managers:req.body.userId}},{new:true}).populate("members managers createdBy");
+        await Task.updateMany({project:req.params.id,assignedTo: req.body.userId}, {assignedTo: null} );
         return res.json({ project: project });
     }
     catch (error) {

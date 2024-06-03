@@ -41,6 +41,8 @@ export const TaskCategoryCard = ({
     }),
   });
   useEffect(() => {
+    console.log("task changed");
+
     if (filter == "overdue") {
       setFilteredTasks(
         tasks
@@ -116,6 +118,13 @@ export const TaskCategoryCard = ({
         project={project}
         onOpenChange={onOpenChange}
         task={filteredTasks[selectedTask] ?? undefined}
+        onDelete={() => {
+          console.log("delete called");
+          const newTasks = tasks.filter(
+            (task) => task._id !== filteredTasks[selectedTask]._id
+          );
+          onTasksChange(newTasks);
+        }}
         onStatusChange={async (val: string) => {
           await onStatusChange(
             val as TaskStatusType,

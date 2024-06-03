@@ -1,7 +1,6 @@
 import { BiEdit, BiX } from "react-icons/bi";
 import { toast } from "sonner";
 import { TaskService } from "../../../../helpers/TaskService";
-import useLoom from "../../../../utils/context";
 import ReactTimeAgo from "react-time-ago";
 import {
   Chip,
@@ -39,16 +38,17 @@ const TaskModal = ({
   onStatusChange,
   project,
   onTaskChange,
+  onDelete,
 }: {
   isOpen: boolean;
   project: Project;
   onOpenChange: () => void;
   task?: Task;
+  onDelete: () => void;
   onStatusChange: (val: TaskStatusType) => Promise<void>;
   onTaskChange: (task: Task) => Promise<void>;
 }) => {
   const [loading, setLoading] = useState(false);
-  const user = useLoom((state) => state.user);
   const [editMode, setEditMode] = useState(false);
   const [titleEditMode, setTitleEditMode] = useState(false);
   const [descriptionEditMode, setDescriptionEditMode] = useState(false);
@@ -60,10 +60,12 @@ const TaskModal = ({
 
   const changeAssignedTo = async (userId: string) => {
     if (!task) return;
-    if (userId == task.assignedTo._id) return;
+    const id = userId == "Unassigned" ? undefined : userId;
+    if (id == task.assignedTo?._id) return;
+
     setLoading(true);
     const token = toast.loading("Assigning...");
-    const res = await TaskService.assignTask(task._id!, userId);
+    const res = await TaskService.assignTask(task._id!, id ?? null);
     if (res) {
       await onTaskChange(res.task);
       toast.success("Assigned Successfully");
@@ -187,33 +189,28 @@ const TaskModal = ({
                 )}
                 <Card>
                   <CardHeader>
-                    {(task.assignedTo._id == user?._id ||
-                      project.managers.find(
-                        (user) => user._id == task.assignedTo._id
-                      )) && (
-                      <RadioGroup
-                        label="status"
-                        isDisabled={loading}
-                        value={task.status}
-                        onValueChange={async (val) => {
-                          setLoading(true);
-                          await onStatusChange(val as TaskStatusType);
-                          setLoading(false);
-                        }}
-                      >
-                        <div className="flex gap-3">
-                          <Radio value="TODO" color="warning">
-                            TODO
-                          </Radio>
-                          <Radio value="In Progress" color="secondary">
-                            In Progress
-                          </Radio>
-                          <Radio value="Completed" color="success">
-                            Completed
-                          </Radio>
-                        </div>
-                      </RadioGroup>
-                    )}
+                    <RadioGroup
+                      label="status"
+                      isDisabled={loading}
+                      value={task.status}
+                      onValueChange={async (val) => {
+                        setLoading(true);
+                        await onStatusChange(val as TaskStatusType);
+                        setLoading(false);
+                      }}
+                    >
+                      <div className="flex gap-3">
+                        <Radio value="TODO" color="warning">
+                          TODO
+                        </Radio>
+                        <Radio value="In Progress" color="secondary">
+                          In Progress
+                        </Radio>
+                        <Radio value="Completed" color="success">
+                          Completed
+                        </Radio>
+                      </div>
+                    </RadioGroup>
                   </CardHeader>
                   <CardBody className="flex flex-col gap-2">
                     <span className="font-semibold text-neutral-500">
@@ -223,23 +220,29 @@ const TaskModal = ({
                       {!editMode ? (
                         <User
                           className="justify-start"
-                          name={task.assignedTo.name}
-                          description={task.assignedTo.email}
+                          name={task.assignedTo?.name ?? "Unassigned"}
+                          description={task.assignedTo?.email ?? "Unassigned"}
                           avatarProps={{
-                            src: task.assignedTo.avatar,
+                            src: task.assignedTo?.avatar,
                             size: "sm",
                           }}
                         />
                       ) : (
                         <Autocomplete
                           defaultItems={[
+                            {
+                              _id: "Unassigned",
+                              name: "Unassigned",
+                              email: "",
+                              avatar: "",
+                            },
                             ...project.members,
                             ...project.managers,
                           ]}
                           variant="faded"
                           placeholder="Select a user"
                           labelPlacement="outside"
-                          selectedKey={task.assignedTo._id}
+                          selectedKey={task.assignedTo?._id ?? "Unassigned"}
                           isRequired
                           allowsCustomValue={false}
                           onSelectionChange={(key) => {
@@ -311,13 +314,34 @@ const TaskModal = ({
             ) : null}
             <ModalFooter>
               <Button
-                color="danger"
+                color="warning"
                 isLoading={loading}
                 variant="flat"
                 onPress={onClose}
               >
                 Close
               </Button>
+              {task && (
+                <Button
+                  color="danger"
+                  isLoading={btnLoading}
+                  variant="flat"
+                  onPress={async () => {
+                    setBtnLoading(true);
+                    if (task) {
+                      const res = await TaskService.deleteTask(task._id!);
+                      if (res) {
+                        onDelete();
+                        toast.success("Task Deleted Successfully");
+                      }
+                    }
+                    setBtnLoading(false);
+                    onClose();
+                  }}
+                >
+                  Delete Task
+                </Button>
+              )}
               {task &&
               (newTask.name != task.name ||
                 newTask.description != task.description) ? (

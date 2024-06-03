@@ -4,7 +4,7 @@ import { Label, Project } from "./project";
 export interface Task {
   _id?: string;
   name: string;
-  assignedTo: User;
+  assignedTo: User | null;
   project: Project;
   labels: Label[];
   description: string;
@@ -20,7 +20,7 @@ export type TaskPriorityType = "Low" | "Medium" | "High";
 
 export interface TaskFormType {
   name: string;
-  assignedTo?: string;
+  assignedTo?: string | null;
   labels: {
     name: string;
     color: string;

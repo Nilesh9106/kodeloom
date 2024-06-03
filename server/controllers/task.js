@@ -47,7 +47,10 @@ const getTasksByUserIdAndProjectId = async (req, res) => {
 const createTask = async (req, res) => {
     try {
         const task =await (await Task.create(req.body)).populate("assignedTo project");
-        await sendTaskAssignMail(task.assignedTo.email,task)
+        if(task.assignedTo){
+            console.log("sending mail for task assign");
+            await sendTaskAssignMail(task.assignedTo.email,task)
+        }
         return res.json({ task: task });
     } catch (error) {
         console.log(error);
@@ -63,10 +66,10 @@ const updateTask = async (req, res) => {
         const oldAssignedTo = task.assignedTo;
         task.set(req.body);
         task= await (await task.save()).populate("assignedTo");
-        if(req.body.assignedTo && oldAssignedTo.toString() !== req.body.assignedTo.toString()){
+        if(req.body.assignedTo && oldAssignedTo?.toString() !== req.body.assignedTo.toString()){
+            console.log("sending mail for task assign");
             await sendTaskAssignMail(task.assignedTo.email,task)
         }
-        console.log(task);
         return res.json({ task: task });
     }
     catch (error) {
@@ -80,7 +83,7 @@ const deleteTask = async (req, res) => {
         const task = await Task.findById(req.params.id).populate("project");
         if (!task) return res.status(httpCode.NotFound).json({ message: "Task not found "});
         if (task.project.managers.indexOf(req.user._id) === -1) return res.status(httpCode.BadRequest).json({ message: "You are not authorized to delete this task "});
-        await task.remove();
+        await task.deleteOne();
         return res.json({message: "Task deleted successfully"});
     }
     catch (error) {

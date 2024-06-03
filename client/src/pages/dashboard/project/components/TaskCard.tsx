@@ -49,8 +49,8 @@ const TaskCard = ({
         </p>
         <Divider className="my-1" />
         <div className="flex items-center">
-          <Tooltip content={task.assignedTo.username}>
-            <Avatar src={task.assignedTo.avatar} size="sm" />
+          <Tooltip content={task.assignedTo?.username ?? "Unassigned"}>
+            <Avatar src={task.assignedTo?.avatar} size="sm" />
           </Tooltip>
           <div className="flex flex-wrap flex-1 justify-end gap-2">
             <Tooltip content="Priority">
